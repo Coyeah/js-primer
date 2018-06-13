@@ -49,11 +49,10 @@ function Waiter (id, name, salary) {
   this.sendOrder = function (dishes) {
     console.log("Waiter get order!");
     let cook = new Cook();
-    cook.sendOrder(dishes);
-  }
-
-  this.finishOrder = function () {
-    console.log("Waiter serve the dishes!");
+    let temp = cook.sendOrder(dishes);
+    if (temp === true) {
+      return temp;
+    }
   }
 }
 
@@ -78,15 +77,10 @@ function Cook (id, name, salary) {
   this.sendOrder = function (dishes) {
     console.log("Cook get order!");
     console.log("Cooking the " + dishes + "...");
-
-    instance.finishOrder();
-  }
-
-  this.finishOrder = function () {
     console.log("Cook finish the order!");
-    let waiter = new Waiter();
-    waiter.finishOrder();
+    return true;
   }
+
 
 }
 
@@ -94,13 +88,18 @@ Cook.prototype = new Staff();
 
 // ===== Customer ===== //
 function Customer () {
+  let instance = this;
+
   this.order = function (dishes) {
     console.log("Customer ordered!");
     let waiter = new Waiter();
-    waiter.sendOrder(dishes);
+    let temp = waiter.sendOrder(dishes);
+    if (temp === true) {
+      instance.eat();
+    }
   }
   this.eat = function () {
-
+    console.log("Customer eating!");
   }
 }
 
@@ -152,5 +151,10 @@ superRestaurant.hire(waiterBen);
 
 console.log(superRestaurant);
 
-let c1 = new Customer();
-c1.order("chips");
+
+for (let i = 0; i < 10; i++) {
+  let tempC = new Customer();
+  console.log("Customer" + i + " in----------");
+  tempC.order("chips");
+  console.log("Customer" + i + " out----------");
+}
