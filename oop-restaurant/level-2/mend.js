@@ -41,7 +41,14 @@ Staff.prototype.work = function () {
     完成一次工作：如果参数是个数组，则记录客人点菜，如果参数不是数组则是上菜行为
  */
 function Waiter (name, salary, id) {
-  Staff.call(this, name, salary, id);  
+  let instance = null;
+  Staff.call(this, name, salary, id);
+  instance = this;
+
+  Waiter = function () {
+    return instance;
+  }
+
 }
 Waiter.prototype = new Staff();
 Waiter.prototype.constructor = Waiter;
@@ -51,7 +58,13 @@ Waiter.prototype.constructor = Waiter;
     完成一次工作：烹饪出菜品
  */
 function Cook (name, salary, id) {
+  let instance = null;
   Staff.call(this, name, salary, id);
+  instance = this;
+
+  Cook = function () {
+    return instance;
+  }
 }
 Cook.prototype = new Staff();
 Cook.prototype.constructor = Cook;
@@ -80,17 +93,15 @@ function Dishes (name, cost, price) {
 }
 
 // 测试用例
-var byTheWay = new Restaurant({
-    cash: 1000000,
-    seats: 20,
-    staff: []
-});
-console.log(byTheWay);
 
-let newCook = new Cook(1202, "Tony", 10000);
-console.log(newCook);
+let w1 = new Cook("d1", 1001, 1011);
+let w2 = new Cook("d2", 1002, 1012);
+let w3 = new Cook("d3", 1003, 1013);
+let w4 = new Cook("d4", 1004, 1014);
+let w5 = new Cook("d5", 1005, 1015);
 
-byTheWay.hire(newCook);
-console.log(byTheWay.staff);
-byTheWay.fire(newCook);
-console.log(byTheWay.staff);
+console.log(w1);
+console.log(w2);
+console.log(w3);
+console.log(w4);
+console.log(w5);
