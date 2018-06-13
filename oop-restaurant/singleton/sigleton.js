@@ -103,3 +103,32 @@ Sigleton.prototype = {
     console.log("name: " + this.name + " | id: " + this.id);
   }
 }
+
+
+
+// // ===== 单例demo5 独立对象交互 ===== //
+// let cat = (function (args) {
+//   let instance;
+//   let letterBox = function (msg) {
+//     this.letter = msg;
+//   }
+//   let info = {
+//     sendLetter: function (msg) {
+//       if (!instance) {
+//         instance = new letterBox(msg);
+//       }
+//       return instance;
+//     }
+//   }
+//   return info;
+// })();
+
+// let dog = {
+//   callCat: function (msg) {
+//     let _xw = cat.sendLetter(msg);
+//     console.log(_xw.letter);
+//     _xw = null;
+//   }
+// }
+
+// dog.callCat("Hello World!");
