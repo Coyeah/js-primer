@@ -44,7 +44,26 @@
 
 * 简单工厂模式
 
-一个专门生产某个产品的类
+一个专门生产某个产品的类，通过不同Type进行区分不同的品牌；
+
+![图解](https://github.com/Coyeah/js-primer/blob/master/resource/factory-1.jpg)
 
 * 工厂模式
+
+工厂模式把类变成父类，不同品牌通过继承实现，生产产品通过接口；
+
+![图解](https://github.com/Coyeah/js-primer/blob/master/resource/factory-2.jpg)
+
 * 抽象工厂模式
+
+抽象工厂模式则是全面化了工厂模式，一样的父类一样的继承一样的接口，可以让不同的品牌生产不同的产品；
+
+![图解](https://github.com/Coyeah/js-primer/blob/master/resource/factory-3-1.jpg)
+
+如果要新添一个工厂；
+
+![图解](https://github.com/Coyeah/js-primer/blob/master/resource/factory-3-2.jpg)
+
+如果要新添一个产品；
+
+![图解](https://github.com/Coyeah/js-primer/blob/master/resource/factory-3-3.jpg)
