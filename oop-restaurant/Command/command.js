@@ -30,7 +30,7 @@ let viewCommand = (function () {
   // 方法集合
   let Action = {
     // 创建方法
-    create : function (view, data) {
+    create : function (data, view) {
       if (data.length) {
         // 遍历数组
         for (let i = 0, len = data.length; i < len; i++) {
@@ -47,7 +47,7 @@ let viewCommand = (function () {
       // 如果传入数据
       if (data) {
         // 根据给定数据创建视图
-        this.create(view, data);
+        this.create(data, view);
       }
       // 展示模块
       document.getElementById(container).innerHTML = html;
@@ -81,7 +81,7 @@ let productData = [
   {
     src: './image/4.jpg',
     text: 'pet4'
-  }
+  } 
 ];
 
 let = titleData = {
