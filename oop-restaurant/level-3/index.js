@@ -108,12 +108,12 @@ function Customer () {
   this.leave = function () {
     console.log("I finished eating.");
     console.log("------------------------------");
-    // queue.dequeue();
-    // if (!queue.isEmpty()) {
-    //   return operation();
-    // } else {
-    //   console.log("There is no customer.");
-    // }
+    queue.dequeue();
+    if (!queue.isEmpty()) {
+      return operation();
+    } else {
+      console.log("There is no customer.");
+    }
   }
 }
 
