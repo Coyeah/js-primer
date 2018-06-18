@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <style type="text/css">
+  html, body {
+    padding: 10px;
+    display: flex;
+  }
+  #restaurant {
+    width: 800px;
+    height: 600px;
+    border: 3px solid #000;
+    border-radius: 20px;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  #restaurant>div>p {
+    font-size: 32px;
+    text-align: center;
+    font-weight: bold;
+    line-height: 64px;
+  }
+
+  #restaurant img {
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    transition: all 0.5s;
+  }
+
+  #chef {
+    left: 95px;
+    top: 450px;
+  }
+
+  #waiter {
+    left: 357.5px;
+    top: 120px;
+  }
+
+  #customer {
+    left: 620px;
+    top: 450px;
+  }
+
+  .kitchen {
+    background-color: #ddd;
+    border-radius: 20px;
+    width: 250px;
+    height: 100%;
+  }
+
+  .room {
+    background-color: #FFFF99;
+    border-radius: 20px;
+    width: 250px;
+    height: 100%;
+  }
+
+  .foyer {
+    background-color: #0099CC;
+    border-radius: 20px;
+    width: 250px;
+    height: 100%;
+  }
+
+  #text {
+    width: 400px;
+    height: 600px;
+    border: 3px solid #000;
+    margin-left: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow: auto;
+  }
+  </style>
+</head>
+<body>
+<div id="restaurant">
+  <div class="kitchen"><p>厨房</p></div>
+  <div class="room"><p>大堂</p></div>
+  <div class="foyer"><p>休息厅</p></div>
+  <img id="chef" src="../image/chef.png" />
+  <img id="waiter" src="../image/waiter.png" />
+  <img id="customer" src="../image/customer.png" />
+</div>
+<div id="text">
+</div>
+<script type="text/javascript" src="./index.js"></script>
+</body>
+</html>
