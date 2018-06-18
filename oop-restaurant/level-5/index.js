@@ -76,11 +76,13 @@ function Waiter (name, salary, id) {
   this.getOrder = function (orderList) {
     for (let i = 0; i < orderList.length; i++) {
       console.log("Waiter: The customer want " + orderList[i].name + ".");
+      textShow("The customer want " + orderList[i].name + ".", "WAITER");
     }
   }
 
   this.serverDishes = function () {
     console.log("Waiter: Yours, Sir.");
+    textShow("Yours, Sir.", "WAITER");
   }
 
   Waiter = function () {
@@ -102,10 +104,12 @@ function Cook (name, salary, id) {
 
   this.cooking = function (orderItem) {
     console.log("Cook: Ok, i'm cooking " + orderItem.name + "!");
+    textShow("Ok, i'm cooking " + orderItem.name + "!", "CHEF");
   }
 
   this.finishedCook = function () {
     console.log("Cook: I have finished.");
+    textShow("I have finished.", "CHEF");
   }
 
   Cook = function () {
@@ -125,16 +129,20 @@ function Customer () {
   this.order = function (menu) {
     let i = Math.floor(Math.random() * 10);
     console.log("Customer: I want a " + menu[i].name + ".");
+    textShow("I want a " + menu[i].name + ".", "CUSTOMER");
     this.orderList.push(menu[i]);
   }
   this.eat = function () {
     console.log("Customer: Thank you! I started eating.");
+    textShow("Thank you! I started eating.", "CUSTOMER");
   }
   this.sitdown = function () {
     console.log("Customer: I've already sat down.");
+    textShow("I've already sat down.", "CUSTOMER");
   }
   this.leave = function () {
     console.log("I finished eating and leaving.");
+    textShow("I finished eating and leaving.", "CUSTOMER");
   }
 }
 
@@ -310,10 +318,21 @@ let customerLeave = function (restaurant) {
   }
 }
 
+// dom文字操作
+let textShow = function (text, type) {
+  let date = new Date();
+  let textArea = document.getElementById('text');
+  let content = textArea.innerHTML;
+  let newStr = [
+    "<p>",
+      "<span>",
+        type + "(" + date.toLocaleTimeString() + ") :",
+      "</span>",
+    text + "</p>"
+  ].join('');
+  textArea.innerHTML = newStr + content;
+}
+
 // 测试用例
 sendData(IFERestaurant);
-
-
-
-
 
