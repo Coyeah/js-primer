@@ -76,13 +76,11 @@ function Waiter (name, salary, id) {
   this.getOrder = function (orderList) {
     for (let i = 0; i < orderList.length; i++) {
       console.log("Waiter: The customer want " + orderList[i].name + ".");
-      textShow("The customer want " + orderList[i].name + ".", "WAITER");
     }
   }
 
   this.serverDishes = function () {
     console.log("Waiter: Yours, Sir.");
-    textShow("Yours, Sir.", "WAITER");
   }
 
   Waiter = function () {
@@ -104,12 +102,10 @@ function Cook (name, salary, id) {
 
   this.cooking = function (orderItem) {
     console.log("Cook: Ok, i'm cooking " + orderItem.name + "!");
-    textShow("Ok, i'm cooking " + orderItem.name + "!", "CHEF");
   }
 
   this.finishedCook = function () {
     console.log("Cook: I have finished.");
-    textShow("I have finished.", "CHEF");
   }
 
   Cook = function () {
@@ -129,20 +125,17 @@ function Customer () {
   this.order = function (menu) {
     let i = Math.floor(Math.random() * 10);
     console.log("Customer: I want a " + menu[i].name + ".");
-    textShow("I want a " + menu[i].name + ".", "CUSTOMER");
     this.orderList.push(menu[i]);
+    return menu[i].name;
   }
   this.eat = function () {
     console.log("Customer: Thank you! I started eating.");
-    textShow("Thank you! I started eating.", "CUSTOMER");
   }
   this.sitdown = function () {
     console.log("Customer: I've already sat down.");
-    textShow("I've already sat down.", "CUSTOMER");
   }
   this.leave = function () {
     console.log("I finished eating and leaving.");
-    textShow("I finished eating and leaving.", "CUSTOMER");
   }
 }
 
@@ -190,19 +183,26 @@ const IFERestaurant = new Restaurant({
     menu: menu
 });
 
-// 创建顾客队列
-for (let i = 0; i < 10; i++) {
+// 创建顾客队列 & dom实例出顾客Icon
+let clients = document.getElementById('clients');
+for (let i = 0; i < 5; i++) {
   IFERestaurant.enqueue();
+  let style = 'left:580px;top:' + (450 - i * 90) + 'px;'
+  clients.innerHTML += '<img style="' + style + '" src="../image/customer.png" />';
+}
+for (let i = 0; i < 5; i++) {
+  IFERestaurant.enqueue();
+  let style = 'left:660px;top:' + (450 - i * 90) + 'px;'
+  clients.innerHTML += '<img style="' + style + '" src="../image/customer.png" />';
 }
 
 const waiter = new Waiter("Lily", 8000);
 const cook = new Cook("Tony", 10000);
 
-const unitTime = 1000;
+const unitTime = 500;
 
 // 第一站
 let sendData = function (restaurant) {
-  restaurant.queue[0].sitdown();
   dealData(restaurant, 'customerOrder');
 
 }
@@ -213,6 +213,10 @@ let dealData = function (data, dealType, key) {
     case 'customerOrder': {
       let restaurant = data;
       let menu = restaurant.menu;
+
+      logHandler("sat down", "Customer");
+      restaurant.queue[0].sitdown();
+      
       customerOrder(menu, restaurant);
       break;
     }
@@ -249,30 +253,53 @@ let dealData = function (data, dealType, key) {
 // 第三站
 
 let customerOrder = function (menu, restaurant) {
+
+  iconHandler(450, 357.5, clients.getElementsByTagName('img')[0], 'CUSTOMER_IN');
+  
+  logHandler("Thinking", "Customer");
+
   console.log("------> Customer Thinking <------");
+  let orderList = [];
+
   let order = new Promise (function (resolve, reject) {
     setTimeout(function () {
       let i = Math.floor(Math.random() * 10 + 1);
       for (; i > 0; i--) {
-        restaurant.queue[0].order(menu);
+        orderList.push(restaurant.queue[0].order(menu));
       }
       resolve(restaurant);
     }, 3 * unitTime);
   });
 
   order.then(function (restaurant) {
+
+    textHandler("I want " + orderList, "customerToWaiter");
+    logHandler("Order: " + orderList, "Waiter");
+
     dealData(restaurant, 'waiterOrder');
   });
 }
 
 let waiterOrder = function (restaurant) {
   console.log("------> Waiter Sending Order List To Cook <------");
+
+  let orderList = [];
+  for (let i = 0; i < restaurant.queue[0].orderList.length; i++) {
+    orderList.push(restaurant.queue[0].orderList[i].name);
+  }
+  textHandler("The customer want " + orderList, "waiterToChef");
+  logHandler("Customer's Order: " + orderList, "Waiter");
+
   waiter.getOrder(restaurant.queue[0].orderList);
   dealData(restaurant, 'cookOrder', 0);
 }
 
 let cookOrder = function (restaurant, index) {
   console.log("------> Cook Cooking The Item of Order List <------");
+ 
+  textHandler("I'm cooking " + restaurant.queue[0].orderList[index].name, "chefToWaiter");
+  logHandler("Cooking " + restaurant.queue[0].orderList[index].name, "Cook");
+
   cook.cooking(restaurant.queue[0].orderList[index]);
   let cooking = new Promise (function (resolve, reject) {
     setTimeout(function () {
@@ -287,18 +314,34 @@ let cookOrder = function (restaurant, index) {
 let waiterServe = function (restaurant, index) {
   waiter.serverDishes();
   if (restaurant.queue[0].orderList.length - 1 != index) {
+
+    textHandler("Here is your " + restaurant.queue[0].orderList[index].name, "waiterToCustomer");
+
     dealData(restaurant, 'cookOrder', index + 1);
   } else {
+
+    textHandler("Here is your " + restaurant.queue[0].orderList[index].name, "waiterToCustomer");
+    textHandler("Order was finished", "chefToWaiter");
+    logHandler("Order was finished", "Cook");
+
     dealData(restaurant, 'customerEat');
   }
 }
 
 let customerEat = function (restaurant) {
   console.log("------> Customer Eating <------");
+
+  textHandler("I'm eating", "customerToWaiter");
+  logHandler("Eating", "Customer");
+
   restaurant.queue[0].eat();
   let eating = new Promise (function (resolve, reject) {
     setTimeout(function () {
       restaurant.queue[0].leave();
+
+      textHandler("I'm leaving", "customerToWaiter");
+      logHandler("Leaving", "Customer");
+
       resolve();
     }, restaurant.queue[0].orderList.length * 3 * unitTime);
   });
@@ -309,17 +352,23 @@ let customerEat = function (restaurant) {
 
 let customerLeave = function (restaurant) {
   restaurant.queue[0].leave();
-  restaurant.dequeue();
-  console.log("------> Customer Leave <------");
-  if (!restaurant.isEmpty()) {
-    dealData(restaurant, 'customerOrder');
-  } else {
-    console.log(">>>>> END <<<<<");
-  }
+
+  let iconOut = iconHandler(800, 357.5, clients.getElementsByTagName('img')[0], 'CUSTOMER_OUT');
+  // clients.removeChild(clients.getElementsByTagName('img')[0]);
+
+  iconOut.then(function () {
+    restaurant.dequeue();
+    console.log("------> Customer Leave <------");
+    if (!restaurant.isEmpty()) {
+      dealData(restaurant, 'customerOrder');
+    } else {
+      console.log(">>>>> END <<<<<");
+    }
+  });
 }
 
 // dom文字操作
-let textShow = function (text, type) {
+let logHandler = function (text, type) {
   let date = new Date();
   let textArea = document.getElementById('text');
   let content = textArea.innerHTML;
@@ -333,6 +382,53 @@ let textShow = function (text, type) {
   textArea.innerHTML = newStr + content;
 }
 
-// 测试用例
-sendData(IFERestaurant);
+// dom图标操作
+let iconHandler = function (top, left, dom, type) {
+  // dom.style.top = top + 'px';
+  // dom.style.left = left + 'px';
+  switch (type) {
+    case 'CUSTOMER_IN': {
+      dom.style.top = top + 'px';
+      dom.style.left = left + 'px';
+      break;
+    }
+    case 'CUSTOMER_OUT': {
+      dom.style.top = top + 'px';
+      dom.style.left = left + 'px';
+      return new Promise (function (resolve, reject) {
+        setTimeout(function () {
+          clients.removeChild(dom);
+          resolve();
+        }, 500);
+      });
+      break;
+    }
+  }
+}
 
+let textHandler = function (text, type) {
+  let dom = document.getElementById(type);
+  dom.innerHTML = text;
+}
+
+let operate = document.getElementById('operate');
+let start = operate.getElementsByTagName('button')[0];
+let time = operate.getElementsByTagName('p')[0];
+
+function timeLoop () {
+  let date = new Date();
+  time.innerHTML = date.toLocaleTimeString();
+  setTimeout(function () {
+    timeLoop();
+  }, 1000);
+}
+
+
+// 测试用例
+// sendData(IFERestaurant);
+
+timeLoop();
+
+start.onclick = function () {
+  sendData(IFERestaurant);
+};

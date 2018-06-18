@@ -17,13 +17,26 @@
     display: flex;
     justify-content: space-between;
     position: relative;
+    overflow: hidden;
   }
 
   #restaurant>div>p {
     font-size: 32px;
     text-align: center;
     font-weight: bold;
-    line-height: 64px;
+    line-height: 32px;
+    margin-bottom: 120px;
+  }
+
+  #restaurant>div>div {
+    height: 100px;
+    width: 100%;
+    margin : 5px 0;
+    border: 1px solid #000;
+    padding: 0 10px;
+    box-sizing: border-box;
+    font-size: 14px;
+    word-break: break-all;
   }
 
   #restaurant img {
@@ -40,12 +53,21 @@
 
   #waiter {
     left: 357.5px;
-    top: 120px;
+    top: 90px;
   }
 
-  #customer {
+/*  #customer {
     left: 620px;
     top: 450px;
+  }*/
+  #clients {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
   }
 
   .kitchen {
@@ -70,7 +92,7 @@
   }
 
   #text {
-    width: 400px;
+    width: 300px;
     height: 600px;
     border: 3px solid #000;
     margin-left: 10px;
@@ -80,25 +102,57 @@
   }
 
   #text p {
-    font-size: 18px;
+    font-size: 14px;
   }
 
   #text span {
     font-weight: bold;
     margin-right: 10px;
   }
+
+  #operate {
+    width: 100px;
+    height: 600px;
+    border: 3px solid #000;
+    padding: 10px;
+    box-sizing: border-box;
+  }
   </style>
 </head>
 <body>
 <div id="restaurant">
-  <div class="kitchen"><p>厨房</p></div>
-  <div class="room"><p>大堂</p></div>
+  <div class="kitchen">
+    <p>厨房</p>
+    <div>
+      <p>Waiter:</p>
+      <p id="waiterToChef"></p>
+    </div>
+    <div>
+      <p>Chef:</p>
+      <p id="chefToWaiter"></p>
+    </div>
+  </div>
+  <div class="room">
+    <p>大堂</p>
+    <div>
+      <p>Waiter:</p>
+      <p id="waiterToCustomer"></p>
+    </div>
+    <div>
+      <p>Customer:</p>
+      <p id="customerToWaiter"></p>
+    </div>
+  </div>
   <div class="foyer"><p>休息厅</p></div>
   <img id="chef" src="../image/chef.png" />
   <img id="waiter" src="../image/waiter.png" />
-  <img id="customer" src="../image/customer.png" />
+  <div id="clients"></div>
 </div>
 <div id="text"></div>
+<div id="operate">
+  <button>START</button>
+  <p></p>
+</div>
 <script type="text/javascript" src="./index.js"></script>
 </body>
 </html>
