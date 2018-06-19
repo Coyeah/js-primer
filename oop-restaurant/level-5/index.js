@@ -287,6 +287,7 @@ let waiterOrder = function (restaurant) {
   for (let i = 0; i < restaurant.queue[0].orderList.length; i++) {
     orderList.push(restaurant.queue[0].orderList[i].name);
   }
+
   textHandler("The customer want " + orderList, "waiterToChef");
   logHandler("Customer's Order: " + orderList, "Waiter");
 
@@ -296,6 +297,8 @@ let waiterOrder = function (restaurant) {
 
 let cookOrder = function (restaurant, index) {
   console.log("------> Cook Cooking The Item of Order List <------");
+
+  iconHandler(90, 95, document.getElementById('waiter'), 'WAITER_TO_CHEF');
  
   textHandler("I'm cooking " + restaurant.queue[0].orderList[index].name, "chefToWaiter");
   logHandler("Cooking " + restaurant.queue[0].orderList[index].name, "Cook");
@@ -313,19 +316,24 @@ let cookOrder = function (restaurant, index) {
 
 let waiterServe = function (restaurant, index) {
   waiter.serverDishes();
-  if (restaurant.queue[0].orderList.length - 1 != index) {
 
-    textHandler("Here is your " + restaurant.queue[0].orderList[index].name, "waiterToCustomer");
+  let serve = iconHandler(90, 357.5, document.getElementById('waiter'), 'WAITER_TO_CUSTOMER');
 
-    dealData(restaurant, 'cookOrder', index + 1);
-  } else {
+  serve.then(function () {
+    if (restaurant.queue[0].orderList.length - 1 != index) {
 
-    textHandler("Here is your " + restaurant.queue[0].orderList[index].name, "waiterToCustomer");
-    textHandler("Order was finished", "chefToWaiter");
-    logHandler("Order was finished", "Cook");
+      textHandler("Here is your " + restaurant.queue[0].orderList[index].name, "waiterToCustomer");
 
-    dealData(restaurant, 'customerEat');
-  }
+      dealData(restaurant, 'cookOrder', index + 1);
+    } else {
+
+      textHandler("Here is your " + restaurant.queue[0].orderList[index].name, "waiterToCustomer");
+      textHandler("Order was finished", "chefToWaiter");
+      logHandler("Order was finished", "Cook");
+
+      dealData(restaurant, 'customerEat');
+    }
+  });
 }
 
 let customerEat = function (restaurant) {
@@ -338,10 +346,6 @@ let customerEat = function (restaurant) {
   let eating = new Promise (function (resolve, reject) {
     setTimeout(function () {
       restaurant.queue[0].leave();
-
-      textHandler("I'm leaving", "customerToWaiter");
-      logHandler("Leaving", "Customer");
-
       resolve();
     }, restaurant.queue[0].orderList.length * 3 * unitTime);
   });
@@ -353,6 +357,9 @@ let customerEat = function (restaurant) {
 let customerLeave = function (restaurant) {
   restaurant.queue[0].leave();
 
+  textHandler("I'm leaving", "customerToWaiter");
+  logHandler("Leaving", "Customer");
+
   let iconOut = iconHandler(800, 357.5, clients.getElementsByTagName('img')[0], 'CUSTOMER_OUT');
   // clients.removeChild(clients.getElementsByTagName('img')[0]);
 
@@ -360,9 +367,11 @@ let customerLeave = function (restaurant) {
     restaurant.dequeue();
     console.log("------> Customer Leave <------");
     if (!restaurant.isEmpty()) {
+      logHandler("Next", "Restaurant");
+
       dealData(restaurant, 'customerOrder');
     } else {
-      console.log(">>>>> END <<<<<");
+      logHandler("Restaurant is empty", "Restaurant");
     }
   });
 }
@@ -398,6 +407,26 @@ let iconHandler = function (top, left, dom, type) {
       return new Promise (function (resolve, reject) {
         setTimeout(function () {
           clients.removeChild(dom);
+          resolve();
+        }, 500);
+      });
+      break;
+    }
+    case 'WAITER_TO_CHEF': {
+      dom.style.top = top + 'px';
+      dom.style.left = left + 'px';
+      // return new Promise (function (resolve, reject) {
+      //   setTimeout(function () {
+      //     resolve();
+      //   }, 500);
+      // });
+      break;
+    }
+    case 'WAITER_TO_CUSTOMER': {
+      dom.style.top = top + 'px';
+      dom.style.left = left + 'px';
+      return new Promise (function (resolve, reject) {
+        setTimeout(function () {
           resolve();
         }, 500);
       });
