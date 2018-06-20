@@ -184,18 +184,18 @@ const IFERestaurant = new Restaurant({
 });
 
 // 创建顾客队列 & dom实例出顾客Icon
-let clients = document.getElementById('clients');
-let customerSrc = '../image/customer.png';
-for (let i = 0; i < 5; i++) {
-  IFERestaurant.enqueue();
-  let style = 'left:580px;top:' + (450 - i * 90) + 'px;'
-  clients.innerHTML += '<img style="' + style + '" src="' + customerSrc + '" />';
-}
-for (let i = 0; i < 5; i++) {
-  IFERestaurant.enqueue();
-  let style = 'left:660px;top:' + (450 - i * 90) + 'px;'
-  clients.innerHTML += '<img style="' + style + '" src="' + customerSrc + '" />';
-}
+// let clients = document.getElementById('clients');
+// let customerSrc = '../image/customer.png';
+// for (let i = 0; i < 5; i++) {
+//   IFERestaurant.enqueue();
+//   let style = 'left:580px;top:' + (450 - i * 90) + 'px;'
+//   clients.innerHTML += '<img style="' + style + '" src="' + customerSrc + '" />';
+// }
+// for (let i = 0; i < 5; i++) {
+//   IFERestaurant.enqueue();
+//   let style = 'left:660px;top:' + (450 - i * 90) + 'px;'
+//   clients.innerHTML += '<img style="' + style + '" src="' + customerSrc + '" />';
+// }
 
 const waiter = new Waiter("Lily", 8000);
 const cook = new Cook("Tony", 10000);
