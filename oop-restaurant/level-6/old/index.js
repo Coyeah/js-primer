@@ -1,4 +1,5 @@
-﻿/*
+﻿// =========== 声明类 =========== //
+/*
   声明餐厅类
     属性：金钱，座位数量、职员列表
     方法：招聘职员，解雇职员
@@ -151,6 +152,8 @@ function Dishes (name, cost, price, unitTime) {
 }
 
 
+
+// =========== 实例化餐厅 =========== //
 /*
   职责链模式
   1-请求模块
@@ -177,15 +180,23 @@ const menu = (function () {
 // 实例化餐厅
 const IFERestaurant = new Restaurant({
     cash: 10000,
-    seats: 20,
+    seats: 10,
     staff: [],
     queue: [],
     menu: menu
 });
 
+let locationX = [600, 670, 740, 810, 910];
+let locationY = 20;  // 100
+
 // 创建顾客队列 & dom实例出顾客Icon
-// let clients = document.getElementById('clients');
-// let customerSrc = '../image/customer.png';
+for (let i = 0; i < 20; i++) {
+  IFERestaurant.enqueue();
+}
+
+ 
+let clients = document.getElementById('clients');
+let customerSrc = '../image/customer.png';
 // for (let i = 0; i < 5; i++) {
 //   IFERestaurant.enqueue();
 //   let style = 'left:580px;top:' + (450 - i * 90) + 'px;'
@@ -200,7 +211,7 @@ const IFERestaurant = new Restaurant({
 const waiter = new Waiter("Lily", 8000);
 const cook = new Cook("Tony", 10000);
 
-const unitTime = 20;
+const unitTime = 100;
 
 // 第一站
 let sendData = function (restaurant) {

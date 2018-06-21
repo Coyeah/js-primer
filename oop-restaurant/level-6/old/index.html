@@ -14,63 +14,69 @@
     border-radius: 20px;
     padding: 10px;
     box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
     display: flex;
     justify-content: space-between;
-    overflow: hidden;
+  }
+
+  #operate {
+    margin: 0;
+    padding: 0;
+    width: 150px;
+    height: 100%;
+    border-right: 1px solid #000;
+    box-sizing: border-box;
   }
 
   .kitchen {
+    margin: 0;
+    padding: 0;
     background-color: #B0E0E6;
     width: 300px;
-    height: 200px;
+    height: 100%;
     border-radius: 20px;
-    display: flex;
-    position: relative;
   }
 
   .room {
-    background-color: #FFDAB9;
-    width: 650px;
+    margin: 0;
+    padding: 0;
+    background-color: #FFFF9E;
+    width: 500px;
     height: 100%;
     border-radius: 20px;
   }
 
   .title {
-    width: 150px;
     font-weight: bold;
     font-size: 32px;
-    text-align: center;
-    padding: 20px 0;
-  }
-
-  .list {
-    width: 50%;
-    font-size: 12px;
-    overflow: hidden;
+    padding: 0 20px;
   }
 
   #restaurant img {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     transition: all 0.5s;
   }
 
   #chef {
     position: absolute;
-    left: 25px;
-    top: 100px;
+    left: 190px;
+    top: 120px;
   }
 
   #waiter {
     position: absolute;
-    left: 390px;
-    top: 130px;
+    left: 500px;
+    top: 120px;
   }
 
-/*  #customer {
-    left: 620px;
-    top: 450px;
-  }*/
+  #customer {
+    position: absolute;
+    left: 910px;
+    top: 20px;
+  }
+
   #clients {
     position: absolute;
     left: 0;
@@ -99,31 +105,23 @@
     font-weight: bold;
     margin-right: 10px;
   }
-
-  #operate {
-    width: 100px;
-    height: 600px;
-    border: 3px solid #000;
-    padding: 10px;
-    box-sizing: border-box;
-  }
   </style>
 </head>
 <body>
 <div id="restaurant">
-  <div class="kitchen">
-    <img id="chef" src="../image/chef.png" />
-    <div class="title">厨房</div>
-    <ul class="list"></ul>
+  <div id="operate">
+    <button>START</button>
+    <p>餐厅本金：</p>
+    <p></p>
   </div>
-  <div class="room">
-    <div class="title">大堂</div>
-    <div class="seats"></div>
-  </div>
+  <div class="kitchen"><p class="title">厨房</p></div>
+  <div class="room"><p class="title">大堂</p></div>
+  <img id="chef" src="../image/chef.png" />
   <img id="waiter" src="../image/waiter.png" />
+  <!-- <img id="customer" src="../image/customer.png" /> -->
   <div id="clients"></div>
 </div>
 <div id="text"></div>
-<script type="text/javascript" src="./index.js"></script>
+<!-- <script type="text/javascript" src="./index.js"></script> -->
 </body>
 </html>
