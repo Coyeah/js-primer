@@ -72,10 +72,11 @@ Cook.prototype.constructor = Cook;
  */
 
 class Staff {
-  constructor (name, salary, id) {
+  constructor (name, salary, id, type) {
     this.name = name;
     this.salary = salary;
     this.id = id;
+    this.type = type;
   }
 
   work () {

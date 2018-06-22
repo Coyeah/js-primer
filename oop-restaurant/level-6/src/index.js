@@ -20,22 +20,23 @@ const menu = (function () {
   return [fish, tofu, chicken, dumplings, rice, cabbage, beef, salad, sandwich, bacon];
 })();
 
+// 实例化员工
+const waiter = new Waiter("Lily", 8000, 101, "waiter");
+const chef = new Chef("Tony", 10000, 102, "chef");
+
 // 实例化餐厅
 const IFERestaurant = new Restaurant({
     cash: 1000,
     seats: 10,
-    staff: [],
+    staff: [waiter, chef],
     queue: [],
     menu: menu
 });
-
-// 实例化员工
-const waiter = new Waiter("Lily", 8000, 101);
-const chef = new Chef("Tony", 10000, 102);
 
 // 创建顾客队列 & dom实例出顾客Icon
 for (let i = 0; i < 20; i++) {
   IFERestaurant.enqueue();
 }
 
-// console.log('test');
+console.log(IFERestaurant);
+

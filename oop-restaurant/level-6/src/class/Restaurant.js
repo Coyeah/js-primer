@@ -52,6 +52,8 @@ Restaurant.prototype = {
 }
  */
 
+import Customer from './Customer.js';
+
 class Restaurant {
   constructor (props) {
     this.cash = props.cash;
@@ -59,6 +61,20 @@ class Restaurant {
     this.staff = props.staff;
     this.queue = props.queue;
     this.menu = props.menu;
+  }
+
+  fire (oldStaff) {
+    this.staff = this.staff.filter((value, index) => {
+      if (value.id == oldStaff.id) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+  }
+
+  hire (newStaff) {
+    this.staff.push(newStaff);
   }
 
   enqueue () {
