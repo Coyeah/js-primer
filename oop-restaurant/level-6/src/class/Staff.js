@@ -108,7 +108,7 @@ class Chef extends Staff {
   }
 
   finishedCook () {
-    console.log("Cook: I have finished.");
+    console.log(">> Chef Done.");
   }
 }
 

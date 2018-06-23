@@ -244,5 +244,19 @@ let payIt = function (type, restaurant, orderList) {
   return sum;
 }
 
+// dom文字操作
+let logHandler = function (text, type) {
+  let date = new Date();
+  let textArea = document.getElementById('text');
+  let content = textArea.innerHTML;
+  let newStr = [
+    "<p>",
+      "<span>",
+        type + "(" + date.toLocaleTimeString() + ") :",
+      "</span>",
+    text + "</p>"
+  ].join('');
+  textArea.innerHTML = newStr + content;
+}
 
 export default chainFlow;

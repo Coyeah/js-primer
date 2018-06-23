@@ -7,6 +7,7 @@ import Dishes from './class/Dishes.js';
 
 // action
 import chainFlow from './action/chainFlow.js';
+import customerCome from './action/customerCome.js';
 
 // 创建菜单
 const menu = (function () {
@@ -37,20 +38,23 @@ const IFERestaurant = new Restaurant({
     menu: menu
 });
 
-// 创建顾客队列 & dom实例出顾客Icon
-for (let i = 0; i < 20; i++) {
-  IFERestaurant.enqueue();
+for (let i = 0; i < 5; i++) {
+  IFERestaurant.enqueue([]);
 }
 
 let operate = document.getElementById('operate');
 let start = operate.getElementsByTagName('button')[0];
 let cash = operate.getElementsByTagName('p')[0];
-let time = operate.getElementsByTagName('p')[1];
+let waiting = operate.getElementsByTagName('p')[1];
+let time = operate.getElementsByTagName('p')[2];
 
 start.onclick = function () {
   cash.innerHTML = '餐厅本金：' + IFERestaurant.cash;
   chainFlow(IFERestaurant);
 };
+
+console.log(IFERestaurant);
+waiting.innerHTML = '排队人数：' + IFERestaurant.size();
 
 (function timeLoop () {
   let date = new Date();

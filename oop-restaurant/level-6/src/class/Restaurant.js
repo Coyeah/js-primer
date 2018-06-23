@@ -77,9 +77,13 @@ class Restaurant {
     this.staff.push(newStaff);
   }
 
-  enqueue () {
-    let element = new Customer();
-    this.queue.push(element);
+  enqueue (arr) {
+    if (arr) {
+      let element = new Customer();
+      this.queue.push(element);
+    } else {
+      this.queue.concat(arr);
+    }
   }
 
   dequeue () {

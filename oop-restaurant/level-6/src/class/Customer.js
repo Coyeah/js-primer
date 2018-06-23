@@ -37,7 +37,7 @@ class Customer {
   }
 
   eat () {
-    console.log("Customer: Thank you! I started eating.");
+    console.log(">> Customer Eating.");
   }
 
   sitdown () {
@@ -45,7 +45,7 @@ class Customer {
   }
 
   leave () {
-    console.log("I finished eating and leaving.");
+    console.log(">> Customer Leaving.");
   }
 }
 
