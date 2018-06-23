@@ -32,9 +32,8 @@ class Customer {
 
   order (menu) {
     let i = Math.floor(Math.random() * 10);
-    console.log("Customer: I want a " + menu[i].name + ".");
-    this.orderList.push(menu[i]);
-    return menu[i].name;
+    console.log(">> Customer Order " + menu[i].name + ".");
+    this.orderList.push(menu[i].name);
   }
 
   eat () {
@@ -42,7 +41,7 @@ class Customer {
   }
 
   sitdown () {
-    console.log("Customer: I've already sat down.");
+    console.log(">> Customer Sitdown.");
   }
 
   leave () {

@@ -85,28 +85,26 @@ class Staff {
 }
 
 class Waiter extends Staff {
-  constructor (name, salary, id) {
-    super(name, salary, id);
+  constructor (name, salary, id, type) {
+    super(name, salary, id, type);
   }
 
   getOrder (orderList) {
-    for (let i = 0; i < orderList.length; i++) {
-      console.log("Waiter: The customer want " + orderList[i].name + ".");
-    }
+    console.log(">> Waitert Order " + orderList + ".");
   }
 
   serverDishes () {
-    console.log("Waiter: Yours dishes, Sir.");
+    console.log(">> Waiter Server.");
   }
 }
 
 class Chef extends Staff {
-  constructor (name, salary, id) {
-    super(name, salary, id);
+  constructor (name, salary, id, type) {
+    super(name, salary, id, type);
   }
 
   cooking (orderItem) {
-    console.log("Cook: Ok, i'm cooking " + orderItem.name + "!");
+    console.log(">> Chef Cooking " + orderItem + ".");
   }
 
   finishedCook () {

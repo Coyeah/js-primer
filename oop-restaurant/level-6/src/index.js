@@ -1,8 +1,12 @@
 // index.js
+// class
 import Restaurant from './class/Restaurant.js';
 import { Waiter, Chef } from './class/Staff.js';
 import Customer from './class/Customer.js';
 import Dishes from './class/Dishes.js';
+
+// action
+import chainFlow from './action/chainFlow.js';
 
 // 创建菜单
 const menu = (function () {
@@ -38,5 +42,20 @@ for (let i = 0; i < 20; i++) {
   IFERestaurant.enqueue();
 }
 
-console.log(IFERestaurant);
+let operate = document.getElementById('operate');
+let start = operate.getElementsByTagName('button')[0];
+let cash = operate.getElementsByTagName('p')[0];
+let time = operate.getElementsByTagName('p')[1];
 
+start.onclick = function () {
+  cash.innerHTML = '餐厅本金：' + IFERestaurant.cash;
+  chainFlow(IFERestaurant);
+};
+
+(function timeLoop () {
+  let date = new Date();
+  time.innerHTML = date.toLocaleTimeString();
+  setTimeout(function () {
+    timeLoop();
+  }, 1000);
+})();

@@ -27,6 +27,7 @@
     height: 100%;
     border-right: 1px solid #000;
     box-sizing: border-box;
+    z-index: 3;
   }
 
   .kitchen {
@@ -57,26 +58,24 @@
     width: 70px;
     height: 70px;
     transition: all 0.5s;
+    position: absolute;
   }
 
   #chef {
-    position: absolute;
     left: 190px;
     top: 120px;
   }
 
   #waiter {
-    position: absolute;
     left: 500px;
     top: 120px;
   }
 
-  #customer {
-    position: absolute;
+/*  #customer {
     left: 910px;
     top: 20px;
   }
-
+*/
   #clients {
     position: absolute;
     left: 0;
@@ -85,6 +84,7 @@
     height: 100%;
     padding: 10px;
     box-sizing: border-box;
+    z-index: 2;
   }
 
   #text {
@@ -111,7 +111,7 @@
 <div id="restaurant">
   <div id="operate">
     <button>START</button>
-    <p>餐厅本金：</p>
+    <p>餐厅本金：？？？</p>
     <p></p>
   </div>
   <div class="kitchen"><p class="title">厨房</p></div>
