@@ -1,7 +1,8 @@
-// customerCome.js
+// newCustomer.js
+// class
 import Customer from '../class/Customer.js';
 
-let customerCome = function () {
+let newCustomer = function () {
   let flag = random(2) == 0 ? true : false;
   if (!flag) return [];
 
@@ -19,4 +20,4 @@ let random = function (max) {
   return Math.floor(Math.random() * max);
 }
 
-export default customerCome;
+export default newCustomer;

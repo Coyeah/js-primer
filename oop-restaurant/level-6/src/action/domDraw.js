@@ -23,7 +23,7 @@ let domDraw = function (type, obj) {
       break;
     }
     case 'cashPrint': {
-      let cash = operate.getElementsByTagName('p')[0];
+      let cash = operate.getElementsByTagName('p')[1];
       cash.innerHTML = '餐厅本金：' + obj.cash;
       break;
     }

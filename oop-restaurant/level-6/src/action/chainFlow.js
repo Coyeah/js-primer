@@ -1,7 +1,9 @@
 // chainFlow.js
+// action
 import domDraw from './domDraw.js';
+import newCustomer from './newCustomer.js';
 
-const unitTime = 20;
+const unitTime = 1000;
 
 let waiter, chef;
 
@@ -83,12 +85,15 @@ let customerOrder = function (restaurant) {
   // customer order
   let p1 = new Promise(function (resolve, reject) {
     setTimeout(function () {
-      let i = Math.floor(Math.random() * restaurant.menu.length + 1);
-      for (; i > 0; i--) {
-        restaurant.queue[0].order(restaurant.menu);
-      }
-      dealData(restaurant, 'waiterOrder');
+      resolve();
     }, 3 * unitTime);
+  });
+  let p2 = p1.then(function () {
+    let i = Math.floor(Math.random() * restaurant.menu.length + 1);
+    for (; i > 0; i--) {
+      restaurant.queue[0].order(restaurant.menu);
+    }
+    dealData(restaurant, 'waiterOrder');
   })
 }
 
@@ -187,12 +192,7 @@ let customerLeave = function (restaurant) {
     domDraw('customerOut', {
       dom: document.getElementById('clients').getElementsByTagName('img')[0],
     });
-    restaurant.dequeue();
-    if (!restaurant.isEmpty()) {
-      dealData(restaurant, 'customerIn');
-    } else {
-      console.log('>> <<');
-    }
+    restaurant.dequeue(0);
   });
 }
 

@@ -6,8 +6,8 @@ import Customer from './class/Customer.js';
 import Dishes from './class/Dishes.js';
 
 // action
-import manager from './action/manager.js';
-import operateShow from './action/operate.js';
+import observerFlow from './action/observerFlow.js';
+import operateShow from './action/operateShow.js';
 
 // 创建菜单
 const menu = (function () {
@@ -44,7 +44,7 @@ let time = operate.getElementsByTagName('p')[0];
 
 start.onclick = function () {
   operateShow(IFERestaurant);
-  manager(IFERestaurant);
+  observerFlow(IFERestaurant);
 };
 
 console.log(IFERestaurant);

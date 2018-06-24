@@ -45,6 +45,52 @@
   }
 })();
 
+// 学生类
+let Student = function (result) {
+  let that = this;
+  that.result = result;
+  that.say = function () {
+    console.log(that.result);
+  }
+}
+Student.prototype.answer = function (question) {
+  Observer.regist(question, this.say);
+}
+Student.prototype.sleep = function (question) {
+  console.log(this.result + ' ' + question + ' 已被注销');
+  Observer.remove(question, this.say);
+}
+
+// 老师类
+let Teacher = function () { };
+Teacher.prototype.ask = function (question) {
+  console.log('问题是：' + question);
+  Observer.fire(question);
+}
+
+// 实例化学生类
+let student1 = new Student('学生1回答问题');
+let student2 = new Student('学生2回答问题');
+let student3 = new Student('学生3回答问题');
+
+// 三位同学订阅（监听）了老师提的问题
+student1.answer('什么是设计模式');
+student1.answer('简述观察者模式');
+student2.answer('什么是设计模式');
+student3.answer('什么是设计模式');
+student3.answer('简述观察者模式');
+
+// 后来第三位同学睡着了
+student3.sleep('简述观察者模式');
+
+// 实例化教师类
+let teacher = new Teacher();
+
+// 提了两个问题
+teacher.ask('什么是设计模式');
+teacher.ask('简述观察者模式');
+
+
 // Observer.regist('text', function (e) {
 //   console.log(e.type, e.args.msg);
 // })
@@ -119,51 +165,3 @@ function $(id) {
 })
 
  */
-
-// 学生类
-let Student = function (result) {
-  let that = this;
-  that.result = result;
-  that.say = function () {
-    console.log(that.result);
-  }
-}
-Student.prototype.answer = function (question) {
-  Observer.regist(question, this.say);
-}
-Student.prototype.sleep = function (question) {
-  console.log(this.result + ' ' + question + ' 已被注销');
-  Observer.remove(question, this.say);
-}
-
-// 老师类
-let Teacher = function () { };
-Teacher.prototype.ask = function (question) {
-  console.log('问题是：' + question);
-  Observer.fire(question);
-}
-
-// 实例化学生类
-let student1 = new Student('学生1回答问题');
-let student2 = new Student('学生2回答问题');
-let student3 = new Student('学生3回答问题');
-
-// 三位同学订阅（监听）了老师提的问题
-student1.answer('什么是设计模式');
-student1.answer('简述观察者模式');
-student2.answer('什么是设计模式');
-student3.answer('什么是设计模式');
-student3.answer('简述观察者模式');
-
-// 后来第三位同学睡着了
-student3.sleep('简述观察者模式');
-
-// 实例化教师类
-let teacher = new Teacher();
-
-// 提了两个问题
-teacher.ask('什么是设计模式');
-teacher.ask('简述观察者模式');
-
-
-
