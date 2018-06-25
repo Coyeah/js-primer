@@ -12,9 +12,9 @@ let task = [];
 let info = {};
 let menu = {};
 let waiter, chef;
-let unitTime = 1000;
+let unitTime = 2000;
 
-let dc = 0;
+let key = 0;
 
 let observerFlow = function (restaurant) {
   // init
@@ -24,11 +24,20 @@ let observerFlow = function (restaurant) {
   randomCustomer(restaurant);
 }
 
+let initDraw = function (restaurant) {
+  textDraw('seats', restaurant);
+  setTimeout(() => {
+    initDraw(restaurant);
+  }, 1000);
+}
+
 let init = function (restaurant) {
   seats = restaurant.seats;
   menu = tidyMenu(restaurant.menu);
   waiter = getStaff('waiter', restaurant.staff)[0];
   chef = getStaff('chef', restaurant.staff)[0];
+
+  initDraw(restaurant);
 
   observer.regist('customerWait', restaurantRegist);
   observer.regist('waiterCalled', waiterRegist);
@@ -47,14 +56,14 @@ let randomCustomer = function (restaurant) {
 
     observer.fire('customerWait', {restaurant, id});
 
-    document.getElementById('operate').getElementsByTagName('p')[2].innerHTML = '排队人数：' + (restaurant.size() - restaurant.seats + seats);
+    textDraw('queue', restaurant);
 
   }
-  if (dc < 30) {
-    dc++;
+  if (key < 30) {
+    key++;
     setTimeout(() => {
       randomCustomer(restaurant);
-    }, Math.floor(Math.random() * 10) * 1000);
+    }, Math.floor(Math.random() * 5 + 1) * 1000);
   }
 }
 
@@ -109,7 +118,7 @@ let customerIn = function (restaurant, id) {
 let customerOrder = function (restaurant, id) {
   let p1 = new Promise((resolve, reject) => {
     setTimeout(function () {
-      let i = Math.floor(Math.random() * 5);
+      let i = Math.floor(Math.random() * 10);
       for (; i > 0; i--) {
         focusCustomer(restaurant, id).order(restaurant.menu);
       }
@@ -129,8 +138,10 @@ let customerOrder = function (restaurant, id) {
 
 let waiterOrder = function (restaurant, id) {
   let orderList = focusCustomer(restaurant, id).orderList;
+  let sumMoney = 0;
 
   for (let i = 0; i < orderList.length; i++) {
+    // 添加到厨房任务列表 - task
     let target = task.filter((value, index) => {
       if (value.name == orderList[i]) {
         return true;
@@ -146,7 +157,13 @@ let waiterOrder = function (restaurant, id) {
     } else {
       target[0].amount.push(id);
     }
+
+    // 计算成本
+    sumMoney += menu[orderList[i]].cost;
   }
+
+  restaurant.cash -=  sumMoney;
+  textDraw('cash', restaurant);
 
   observer.fire('chefCalled', {restaurant});
 }
@@ -154,7 +171,6 @@ let waiterOrder = function (restaurant, id) {
 let chefOrder = function (restaurant) {
   let item = task.shift();
   chef.cooking(item);
-  console.log(task);
 
   // 烹饪中
   let p1 = new Promise((resolve, reject) => {
@@ -204,6 +220,17 @@ let customerEat = function (restaurant, id) {
 }
 
 let customerLeave = function (restaurant, id) {
+  let orderList = focusCustomer(restaurant, id).orderList;
+  let sumMoney = 0;
+
+  for (let i = 0; i < orderList.length; i++) {
+    // 计算成本
+    sumMoney += menu[orderList[i]].price;
+  }
+
+  restaurant.cash +=  sumMoney;
+  textDraw('cash', restaurant);
+
   restaurant.dequeue(indexCustomer(restaurant, id));
   seats++;
 
@@ -214,7 +241,7 @@ let customerLeave = function (restaurant, id) {
     observer.fire('customerWait', {restaurant, id: newid});
   }
 
-  document.getElementById('operate').getElementsByTagName('p')[2].innerHTML = '排队人数：' + (restaurant.size() - restaurant.seats + seats);
+  textDraw('queue', restaurant);
 }
 
 
@@ -256,6 +283,24 @@ let indexCustomer = function (restaurant, id) {
     }
   }
   return -1;
+}
+
+let textDraw = function (type, data) {
+  switch (type) {
+    case 'queue': {
+      document.getElementById('operate').getElementsByTagName('p')[2].innerHTML = '排队人数：' + (data.size() - data.seats + seats);
+      break;
+    }
+    case 'seats': {
+      document.getElementById('operate').getElementsByTagName('p')[3].innerHTML = '空余位置：' + seats;
+      document.getElementById('operate').getElementsByTagName('p')[4].innerHTML = '队列数量：' + data.size();
+      break;
+    }
+    case 'cash': {
+      document.getElementById('operate').getElementsByTagName('p')[1].innerHTML = '餐厅本金：' + data.cash;
+      break;
+    }  
+  }
 }
 
 export default observerFlow;

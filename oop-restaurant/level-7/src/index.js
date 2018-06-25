@@ -7,7 +7,6 @@ import Dishes from './class/Dishes.js';
 
 // action
 import observerFlow from './action/observerFlow.js';
-import operateShow from './action/operateShow.js';
 
 // 创建菜单
 const menu = (function () {
@@ -44,7 +43,6 @@ let start = operate.getElementsByTagName('button')[0];
 let time = operate.getElementsByTagName('p')[0];
 
 start.onclick = function () {
-  operateShow(IFERestaurant);
   observerFlow(IFERestaurant);
 };
 
