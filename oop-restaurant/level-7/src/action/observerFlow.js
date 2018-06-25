@@ -4,10 +4,27 @@ import Customer from '../class/Customer.js';
 
 // action
 import Observer from './Observer.js';
+import domDraw from './domDraw.js';
 
 let observer = Observer();
 
 let seats = 0;
+let book = {
+  0: null,
+  1: null,
+  2: null,
+  3: null,
+  4: null,
+  5: null,
+  6: null,
+  7: null,
+  8: null,
+  9: null,
+}
+let location = [
+  [20,910],[20,830],[20,750],[20,670],[20,590],
+  [120,910],[120,830],[120,750],[120,670],[120,590]
+];
 let task = [];
 let info = {};
 let menu = {};
@@ -24,13 +41,6 @@ let observerFlow = function (restaurant) {
   randomCustomer(restaurant);
 }
 
-let initDraw = function (restaurant) {
-  textDraw('seats', restaurant);
-  setTimeout(() => {
-    initDraw(restaurant);
-  }, 1000);
-}
-
 let init = function (restaurant) {
   seats = restaurant.seats;
   menu = tidyMenu(restaurant.menu);
@@ -39,9 +49,21 @@ let init = function (restaurant) {
 
   initDraw(restaurant);
 
+  // 创造人偶
+  domDraw('customerCreate', {
+    amount: seats
+  });
+
   observer.regist('customerWait', restaurantRegist);
   observer.regist('waiterCalled', waiterRegist);
   observer.regist('chefCalled', chefRegist);
+}
+
+let initDraw = function (restaurant) {
+  textDraw('seats', restaurant);
+  setTimeout(() => {
+    initDraw(restaurant);
+  }, 1000);
 }
 
 // 随机生成顾客
@@ -59,7 +81,7 @@ let randomCustomer = function (restaurant) {
     textDraw('queue', restaurant);
 
   }
-  if (key < 30) {
+  if (key < 40) {
     key++;
     setTimeout(() => {
       randomCustomer(restaurant);
@@ -109,29 +131,47 @@ let chefRegist = function (events) {
 }
 
 let customerIn = function (restaurant, id) {
-  console.log(focusCustomer(restaurant, id));
+  // 顾客入座
+  book[emptySeat(null)] = id;
+  console.log(book);
 
   focusCustomer(restaurant, id).sitdown();
   observer.fire('waiterCalled', {restaurant, id, type: 'customerOrder'});
 }
 
 let customerOrder = function (restaurant, id) {
+
+  let data = location[emptySeat(id)];
+
   let p1 = new Promise((resolve, reject) => {
     setTimeout(function () {
-      let i = Math.floor(Math.random() * 10);
-      for (; i > 0; i--) {
-        focusCustomer(restaurant, id).order(restaurant.menu);
-      }
-      focusCustomer(restaurant, id).order(restaurant.menu);
-      console.log('Customer ' + id + ' want ' + focusCustomer(restaurant, id).orderList);
-      
-      info[id] = focusCustomer(restaurant, id).orderList.length;
-
+      domDraw('domMove', {
+        left: data[1],
+        top: data[0],
+        dom: document.getElementById('clients').getElementsByTagName('img')[emptySeat(id)]
+      })
       resolve();
-    }, 3 * unitTime);
+    }, 500);
   });
 
   let p2 = p1.then(() => {
+    return new Promise((resolve, reject) => {
+      setTimeout(function () {
+        let i = Math.floor(Math.random() * 10);
+        for (; i > 0; i--) {
+          focusCustomer(restaurant, id).order(restaurant.menu);
+        }
+        focusCustomer(restaurant, id).order(restaurant.menu);
+        console.log('Customer ' + id + ' want ' + focusCustomer(restaurant, id).orderList);
+        
+        info[id] = focusCustomer(restaurant, id).orderList.length;
+
+        resolve();
+      }, 3 * unitTime);
+    });
+  });
+
+  let p3 = p2.then(() => {
     waiterOrder(restaurant, id);
   });
 }
@@ -231,15 +271,35 @@ let customerLeave = function (restaurant, id) {
   restaurant.cash +=  sumMoney;
   textDraw('cash', restaurant);
 
-  restaurant.dequeue(indexCustomer(restaurant, id));
-  seats++;
+  // 顾客离座
+  let p1 = new Promise((resolve, reject) => {
+    domDraw('domMove', {
+      left: 1000,
+      top: 800,
+      dom: document.getElementById('clients').getElementsByTagName('img')[emptySeat(id)]
+    });
+    setTimeout(function () {
+      domDraw('domMove', {
+        left: 1100,
+        top: 20,
+        dom: document.getElementById('clients').getElementsByTagName('img')[emptySeat(id)]
+      });
+      // 删除记录
+      book[emptySeat(id)] = null;
+      resolve();
+    }, 500);
+  });
 
-  console.log('----------------------------------------------- leaving');
+  let p2 = p1.then(() => {
+    focusCustomer(restaurant, id).leave();
+    restaurant.dequeue(indexCustomer(restaurant, id));
+    seats++;
 
-  if (restaurant.size() > (restaurant.seats - seats)) {
-    let newid = restaurant.queue[restaurant.seats - seats].id;
-    observer.fire('customerWait', {restaurant, id: newid});
-  }
+    if (restaurant.size() > (restaurant.seats - seats)) {
+      let newid = restaurant.queue[restaurant.seats - seats].id;
+      observer.fire('customerWait', {restaurant, id: newid});
+    }
+  });
 
   textDraw('queue', restaurant);
 }
@@ -273,6 +333,15 @@ let focusCustomer = function (restaurant, id) {
     }
   }
   return null;
+}
+
+// 找到指定位置
+let emptySeat = function (target) {
+  for (let key in book) {
+    if (book[key] == target) {
+      return key;
+    }
+  }
 }
 
 // 根据ID找到顾客在队列的位置
