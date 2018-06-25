@@ -28,6 +28,11 @@ function Customer () {
 class Customer {
   constructor () {
     this.orderList = [];
+    this.id = '';
+  }
+
+  tag (id) {
+    this.id = id;
   }
 
   order (menu) {
