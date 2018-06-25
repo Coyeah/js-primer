@@ -35,6 +35,7 @@ const IFERestaurant = new Restaurant({
     seats: 10,
     staff: [waiter, chef],
     queue: [],
+    repast: [],
     menu: menu
 });
 

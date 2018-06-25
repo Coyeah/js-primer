@@ -77,6 +77,7 @@ class Staff {
     this.salary = salary;
     this.id = id;
     this.type = type;
+    this.busy = false;
   }
 
   work () {
@@ -84,6 +85,7 @@ class Staff {
   }
 }
 
+// Waiter
 class Waiter extends Staff {
   constructor (name, salary, id, type) {
     super(name, salary, id, type);
@@ -98,13 +100,16 @@ class Waiter extends Staff {
   }
 }
 
+// Chef
 class Chef extends Staff {
   constructor (name, salary, id, type) {
     super(name, salary, id, type);
+    this.current = '';
   }
 
   cooking (orderItem) {
-    console.log(">> Chef Cooking " + orderItem + ".");
+    this.current = orderItem;
+    console.log(">> Chef Cooking " + orderItem.name + ".");
   }
 
   finishedCook () {

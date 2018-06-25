@@ -77,37 +77,21 @@ class Restaurant {
     this.staff.push(newStaff);
   }
 
-  enqueue (arr) {
-    if (!arr) {
-      let element = new Customer();
-      this.queue.push(element);
-    } else {
-      this.queue.concat(arr);
-    }
+  enqueue () {
+    let element = new Customer();
+    this.queue.push(element);
   }
 
   dequeue (index) {
-    return this.queue.splice(index, 1);
-  }
-
-  front () {
-    return this.queue[0];
-  }
-
-  isEmpty () {
-    return this.queue.length == 0;
+    if (index) {
+      return this.queue.splice(index, 1);
+    } else {
+      return this.queue.shift();
+    }
   }
 
   size () {
     return this.queue.length;
-  }
-
-  clear () {
-    this.queue = [];
-  }
-
-  print () {
-    console.log(this.queue.toString());
   }
 }
 
