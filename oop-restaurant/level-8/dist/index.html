@@ -61,15 +61,15 @@
     position: absolute;
   }
 
-  #chef {
+/*  #chef {
     left: 190px;
     top: 120px;
-  }
+  }*/
 
-  #waiter {
+/*  #waiter {
     left: 500px;
     top: 120px;
-  }
+  }*/
 
 /*  #customer {
     left: 910px;
@@ -77,6 +77,17 @@
   }*/
 
   #clients {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    z-index: 2;
+  }
+
+  #worker {
     position: absolute;
     left: 0;
     top: 0;
@@ -130,9 +141,10 @@
   </div>
   <div class="kitchen"><p class="title">厨房</p></div>
   <div class="room"><p class="title">大堂</p></div>
-  <img id="chef" src="./image/chef.png" />
-  <img id="waiter" src="./image/waiter.png" />
+  <!-- <img id="chef" src="./image/chef.png" /> -->
+  <!-- <img id="waiter" src="./image/waiter.png" /> -->
   <!-- <img id="customer" src="./image/customer.png" /> -->
+  <div id="worker"></div>
   <div id="clients"></div>
 </div>
 <div id="text"></div>

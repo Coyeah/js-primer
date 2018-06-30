@@ -21,6 +21,7 @@ let location = [
   [20,910], [20,830], [20,750], [20,670], [20,590],
   [120,910], [120,830], [120,750], [120,670], [120,590]
 ];
+let workerLocation = [120, 200, 280, 360, 440, 520];
 // 厨师任务列表
 let chefTask = [];
 // 服务员任务列表
@@ -36,14 +37,19 @@ let menu = {};
 // 定义服务员与厨师团队
 let waiter, chef;
 // 定义单位时间
-let unitTime = 2000;
-// 自定义属性 
-let key = 40;
+let unitTime = 1000;
+
+// DOM
+let textBoard = document.getElementById('text');
 let start = document.getElementById('operate').getElementsByTagName('button')[0];
 let addWaiter = document.getElementById('operate').getElementsByTagName('button')[1];
 let delWaiter = document.getElementById('operate').getElementsByTagName('button')[2];
 let addChef = document.getElementById('operate').getElementsByTagName('button')[3];
 let delChef = document.getElementById('operate').getElementsByTagName('button')[4];
+
+// 自定义属性 
+
+
 
 let observerFlow = function (restaurant) {
   // 初始化
@@ -63,35 +69,46 @@ let init = function (restaurant) {
 
   // 按钮功能
   addWaiter.onclick = function () {
-    let date = new Date();
-    let name = "w" + date.getTime();
-    let target = new Waiter(name, 3000, date.getTime(), "waiter");
-    restaurant.cash -= 3000;
-    restaurant.hire(target);
-    waiter = getStaff('waiter', restaurant.staff);
-    textDraw('seats', restaurant);
+    if (waiter.length < 5) {
+      let date = new Date();
+      let name = "w" + date.getTime();
+      let target = new Waiter(name, 3000, date.getTime(), "waiter");
+      restaurant.cash -= 3000;
+      domDraw('addWorker', {type: true, top: workerLocation[waiter.length]});
+      restaurant.hire(target);
+      waiter = getStaff('waiter', restaurant.staff);
+      textDraw('seats', restaurant);
+    }
   };
   delWaiter.onclick = function () {
-    if(isFreeWaiter()) {
-      restaurant.fire(freeWaiter());
+    if (waiter.length != 0) {
+      if(isFreeWaiter()) {
+        restaurant.fire(freeWaiter());
+      }
+      waiter = getStaff('waiter', restaurant.staff);
+      domDraw('delWorker', {type: true, top: workerLocation[waiter.length]});
     }
-    waiter = getStaff('waiter', restaurant.staff);
   };
   addChef.onclick = function () {
-    let date = new Date();
-    let name = "c" + date.getTime();
-    let target = new Chef(name, 5000, date.getTime(), "chef");
-    restaurant.cash -= 5000;
-    restaurant.hire(target);
-    chef = getStaff('chef', restaurant.staff);
-    textDraw('seats', restaurant);
-    console.log(chef);
+    if (chef.length < 5) {  
+      let date = new Date();
+      let name = "c" + date.getTime();
+      let target = new Chef(name, 5000, date.getTime(), "chef");
+      restaurant.cash -= 5000;
+      domDraw('addWorker', {type: false, top: workerLocation[chef.length]});
+      restaurant.hire(target);
+      chef = getStaff('chef', restaurant.staff);
+      textDraw('seats', restaurant);
+    }
   };
   delChef.onclick = function () {
-    if(isFreeChef()) {
-      restaurant.fire(freeChef());
+    if (chef.length != 0) {
+      if(isFreeChef()) {
+        restaurant.fire(freeChef());
+      }
+      chef = getStaff('chef', restaurant.staff);
+      domDraw('delWorker', {type: false, top: workerLocation[waiter.length]});
     }
-    chef = getStaff('chef', restaurant.staff);
   };
 
   initTextDraw(restaurant);
@@ -165,14 +182,10 @@ let randomCustomer = function (restaurant) {
   }
 
   // 递归
-  if (key > 0) {
-    key--;
-
-    // 随机时间添加顾客
-    setTimeout(() => {
-      randomCustomer(restaurant);
-    }, Math.floor(Math.random() * 5 + 1) * 1000);
-  }
+  // 随机时间添加顾客
+  setTimeout(() => {
+    randomCustomer(restaurant);
+  }, Math.floor(Math.random() * 5 + 1) * 1000);
 }
 
 // 餐厅监听调用方法
