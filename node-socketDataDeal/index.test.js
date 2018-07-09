@@ -1,7 +1,7 @@
-const { HBProvider } = require('./components/fetchData');
+const { BAProvider } = require('./components/fetchData');
 
-const demo = new HBProvider({
-  priceCurrency: 'ltc',
+const demo = new BAProvider({
+  priceCurrency: 'bnb',
   underlyingCurrency: 'btc'
 });
 demo.start();

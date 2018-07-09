@@ -1,19 +1,16 @@
-const { EXCHANGE_TYPE } = require('./constants/model');
-const { CURRENCY_TYPE } = require('./constants/model');
-const { 
-  Exchange, 
-  PriceCurrency, 
-  UnderlyingCurrency,
-} = require('./components/currencyClass');
+const Exchange = require('./models/Exchange');
+const PriceCurrency = require('./models/PriceCurrency');
+const UnderlyingCurrency = require('./models/UnderlyingCurrency');
 
 const { 
   OKProvider,
   ZBProvider,
   HBProvider,
+  BAProvider,
  } = require('./components/fetchData');
 
-const { ZB, HB, BA, OK } = EXCHANGE_TYPE;
-const { BTC, USD, LTC } = CURRENCY_TYPE;
+const { ZB, HB, BA, OK } = Exchange.EXCHANGE_TYPE;
+const { BTC, USD, LTC, BNB } = Exchange.CURRENCY_TYPE;
 
 // const exchanges = [
 //   {
@@ -81,6 +78,13 @@ let exchange3 = new Exchange(ZB);
 exchange3.addPriceCurrency(pc3);
 exchanges.push(exchange3);
 
+let uc4 = new UnderlyingCurrency(BTC);
+let pc4 = new PriceCurrency(BNB);
+pc4.addUnderlyingCurrencies(uc4);
+let exchange4 = new Exchange(BA);
+exchange4.addPriceCurrency(pc4);
+exchanges.push(exchange4);
+
 class DataDeal {
   constructor(exchanges, interval) {
     this.exchanges = exchanges;
@@ -99,6 +103,10 @@ class DataDeal {
       }
       case HB: {
         return HBProvider;
+        break;
+      }
+      case BA: {
+        return BAProvider;
         break;
       }
     }

@@ -361,8 +361,121 @@ class HBProvider extends Provider {
   }
 }
 
+/* for BA */
+class BAProvider extends Provider {
+  constructor(params) {
+    super(params)
+    this.type = 'BA';
+    this.WS_URL = "wss://stream.binance.com:9443";
+    this.timer = undefined;
+  }
+
+  start() {
+    const info = [
+      `/ws/${this.priceCurrency}${this.underlyingCurrency}@kline_1m`,
+      `/ws/${this.priceCurrency}${this.underlyingCurrency}@depth5`,
+    ];
+
+    const self = this;
+
+    let target = {
+      type: this.type,
+      priceCurrency: this.priceCurrency,
+      underlyingCurrency: this.underlyingCurrency,
+      timestamp: null,
+      amount: null,
+      count: null,
+      open: null,
+      close: null,
+      low: null,
+      high: null,
+      vol: null,
+      deepBids: null,
+      deepAsks: null,
+    };
+
+    init(info, this.WS_URL, (msg) => {
+      if (msg.e == 'kline') {
+        target.open = msg.k.o;
+        target.close = msg.k.c;
+        target.low = msg.k.l;
+        target.high = msg.k.h;
+        target.amount = msg.k.n;
+        target.timestamp = msg.e;
+      } else {
+        target.deepBids = msg.bids;
+        target.deepAsks = msg.asks;
+      }
+      console.log(target);
+    });
+
+    function init(info, url, fn) {
+      var wsKline = new WebSocket(url + info[0]);
+      wsKline.on('open', () => {
+        console.log('open');
+      });
+
+      wsKline.on('message', (data) => {
+        console.log('message');
+        let msg = JSON.parse(data);
+        // console.log(msg);
+        fn(msg);
+      });
+
+      wsKline.on('close', () => {
+        console.log('close');
+        init();
+      });
+
+      wsKline.on('error', err => {
+        console.log('error', err);
+        init();
+      });
+
+      var wsDepth = new WebSocket(url + info[1]);
+      wsDepth.on('open', () => {
+        console.log('open');
+      });
+
+      wsDepth.on('message', (data) => {
+        // console.log('message');
+        let msg = JSON.parse(data);
+        // console.log(msg);
+        fn(msg);
+      });
+
+      wsDepth.on('close', () => {
+        console.log('close');
+        init();
+      });
+
+      wsDepth.on('error', err => {
+        console.log('error', err);
+        init();
+      });
+
+      return {wsKline,wsDepth};
+    }
+
+    // this.timer = setInterval(() => {
+    //   self.onData(target);
+    // }, this.interval);
+  }
+
+  stop() {
+    if (this.timer !== undefined) {
+      clearInterval(this.timer);
+    }
+  }
+
+  test() {
+    console.log(this.priceCurrency, this.underlyingCurrency);
+  }
+}
+
 module.exports = {
   OKProvider,
   ZBProvider,
   HBProvider,
+  BAProvider,
 }
