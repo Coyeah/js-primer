@@ -45,7 +45,7 @@ const exchanges = [
       //       name: USD,
       //       data: []
       //     },
-      //   ]
+      // ]
       // },
     ]
   }
@@ -81,20 +81,17 @@ class DataDeal {
   start() {
     
     const timer = () => {
-      console.log('start');
       setTimeout(() => {
         this.exchanges.forEach((p1) => {
           p1.priceCurrencies.forEach((p2) => {
             p2.underlyingCurrencies.forEach((p3) => {
-              console.log('------------->');
-              console.log(p3.data);
+              console.log('-->', p3.data);
             })
           })
         });
         timer();
       }, 1000);
     }
-
     timer();
 
     // console.log(this.exchanges);
@@ -110,7 +107,8 @@ class DataDeal {
             priceCurrency: pc.name,
             underlyingCurrency: uc.name,
             onData: (data) => {
-              uc.data.push(data);
+              //uc.data.push(data);
+              dataDeal.call(this, uc.data, data);
             },
             interval: this.interval,
           });
@@ -119,6 +117,10 @@ class DataDeal {
       });
     });
   }
+}
+
+const dataDeal = (container, data) => {
+  container.push(data);
 }
 
 let demo = new DataDeal(exchanges);

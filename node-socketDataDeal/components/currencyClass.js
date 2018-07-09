@@ -1,8 +1,9 @@
 const {EXCHANGE_TYPE} = require('../constants/model');
 
+// focus to exchange
 module.exports = class CurrencyClass {
-  constructor() {
-
+  constructor(params) {
+    this.exchange = parmas.exchange
   }
 
   start() {
