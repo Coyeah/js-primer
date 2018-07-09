@@ -1,55 +1,63 @@
-const {EXCHANGE_TYPE} = require('./constants/model');
-const {CURRENCY_TYPE} = require('./constants/model');
-// const CurrencyClass = require('./components/currencyClass');
+const { EXCHANGE_TYPE } = require('./constants/model');
+const { CURRENCY_TYPE } = require('./constants/model');
+const { Exchange, PriceCurrency, UnderlyingCurrency } = require('./components/currencyClass');
 
-const OKProvider = require('./components/fetchData');
+const { OKProvider } = require('./components/fetchData');
 
 const { ZB, HB, BA, OK } = EXCHANGE_TYPE;
 const { BTC, ITC, ETH, ETC, BCC, USD } = CURRENCY_TYPE;
 
-const exchanges = [
-  {
-    type: OK,
-    priceCurrencies: [
-      {
-        name: BTC,
-        underlyingCurrencies: [
-          {
-            name: USD,
-            data: []
-          },
-        ]
-      },
-      // {
-      //   name: ITC,
-      //   underlyingCurrencies: [
-      //     {
-      //       name: USD,
-      //       data: []
-      //     },
-      //   ]
-      // },
-      // {
-      //   name: ETH,
-      //   underlyingCurrencies: [
-      //     {
-      //       name: USD,
-      //       data: []
-      //     },
-      //   ]
-      // },
-      // {
-      //   name: ETC,
-      //   underlyingCurrencies: [
-      //     {
-      //       name: USD,
-      //       data: []
-      //     },
-      // ]
-      // },
-    ]
-  }
-];
+// const exchanges = [
+//   {
+//     type: OK,
+//     priceCurrencies: [
+//       {
+//         name: BTC,
+//         underlyingCurrencies: [
+//           {
+//             name: USD,
+//             data: []
+//           },
+//         ]
+//       },
+//       {
+//         name: ITC,
+//         underlyingCurrencies: [
+//           {
+//             name: USD,
+//             data: []
+//           },
+//         ]
+//       },
+//       {
+//         name: ETH,
+//         underlyingCurrencies: [
+//           {
+//             name: USD,
+//             data: []
+//           },
+//         ]
+//       },
+//       {
+//         name: ETC,
+//         underlyingCurrencies: [
+//           {
+//             name: USD,
+//             data: []
+//           },
+//       ]
+//       },
+//     ]
+//   }
+// ];
+
+const exchanges = [];
+let uc = new UnderlyingCurrency(USD);
+let pc = new PriceCurrency(BTC)
+pc.addUnderlyingCurrencies(uc);
+let exchange = new Exchange(OK);
+exchange.addPriceCurrency(pc);
+exchanges.push(exchange);
 
 class DataDeal {
   constructor(exchanges, interval) {
@@ -59,18 +67,6 @@ class DataDeal {
 
   builtProvider(type) {
     switch (type) {
-      case ZB: {
-        return OKProvider;
-        break;
-      }
-      case HB: {
-        return OKProvider;
-        break;
-      }
-      case BA: {
-        return OKProvider;
-        break;
-      }
       case OK: {
         return OKProvider;
         break;
@@ -79,36 +75,40 @@ class DataDeal {
   }
 
   start() {
-    
-    const timer = () => {
-      setTimeout(() => {
-        this.exchanges.forEach((p1) => {
-          p1.priceCurrencies.forEach((p2) => {
-            p2.underlyingCurrencies.forEach((p3) => {
-              console.log('-->', p3.data);
-            })
-          })
-        });
-        timer();
-      }, 1000);
-    }
-    timer();
 
-    // console.log(this.exchanges);
-    // let currency = new CurrencyClass()
+    // this.exchanges.forEach((exchange) => {
+    //   // console.log(exchange.type);
+    //   exchange.priceCurrencies.forEach((pc) => {
+    //     // console.log(pc.name);
+    //     pc.underlyingCurrencies.forEach((uc) => {
+    //       // console.log(uc.name);
+    //       const ProviderClass = this.builtProvider(exchange.type);
+    //       const provider = new ProviderClass({
+    //         priceCurrency: pc.name,
+    //         underlyingCurrency: uc.name,
+    //         onData: (data) => {
+    //           //uc.data.push(data);
+    //           dataDeal.call(this, uc.data, data);
+    //         },
+    //         interval: this.interval,
+    //       });
+    //       provider.start();
+    //     });
+    //   });
+    // });
+
     this.exchanges.forEach((exchange) => {
-      // console.log(exchange.type);
-      exchange.priceCurrencies.forEach((pc) => {
-        // console.log(pc.name);
-        pc.underlyingCurrencies.forEach((uc) => {
-          // console.log(uc.name);
-          const ProviderClass = this.builtProvider(exchange.type);
+      // console.log(exchange.getType());
+      exchange.getPriceCurrencies().forEach((pc) => {
+        // console.log(pc.getPriceCurrency());
+        pc.getUnderlyingCurrencies().forEach((uc) => {
+          // console.log(uc.getUnderCurrency());
+          const ProviderClass = this.builtProvider(exchange.getType() );
           const provider = new ProviderClass({
-            priceCurrency: pc.name,
-            underlyingCurrency: uc.name,
+            priceCurrency: pc.getPriceCurrency(),
+            underlyingCurrency: uc.getUnderlyingCurrency(),
             onData: (data) => {
-              //uc.data.push(data);
-              dataDeal.call(this, uc.data, data);
+              uc.addData(data);
             },
             interval: this.interval,
           });
@@ -119,9 +119,10 @@ class DataDeal {
   }
 }
 
-const dataDeal = (container, data) => {
-  container.push(data);
-}
+// const dataDeal = (container, data) => {
+//   container.push(data);
+//   console.log(data);
+// }
 
 let demo = new DataDeal(exchanges);
 demo.start();

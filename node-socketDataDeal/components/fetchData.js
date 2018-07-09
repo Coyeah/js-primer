@@ -10,7 +10,7 @@ class Provider {
   }
 }
 
-module.exports =  class OKProvider extends Provider {
+class OKProvider extends Provider {
   constructor (params) {
     super(params);
     this.type = 'OK';
@@ -147,4 +147,8 @@ function init(info, url, fn) {
   }
 
   return ws;
+}
+
+module.exports = {
+  OKProvider,
 }
