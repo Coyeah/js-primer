@@ -1,6 +1,6 @@
-const { ZBProvider } = require('./components/fetchData');
+const { HBProvider } = require('./components/fetchData');
 
-const demo = new ZBProvider({
+const demo = new HBProvider({
   priceCurrency: 'ltc',
   underlyingCurrency: 'btc'
 });

@@ -7,9 +7,6 @@ module.exports.EXCHANGE_TYPE = {
 
 module.exports.CURRENCY_TYPE = {
   BTC: 'btc',
-  ITC: 'itc',
-  ETH: 'eth',
-  ETC: 'etc',
-  BCC: 'bcc',
   USD: 'usd',
+  LTC: 'ltc',
 };

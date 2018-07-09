@@ -9,10 +9,11 @@ const {
 const { 
   OKProvider,
   ZBProvider,
+  HBProvider,
  } = require('./components/fetchData');
 
 const { ZB, HB, BA, OK } = EXCHANGE_TYPE;
-const { BTC, ITC, ETH, ETC, BCC, USD } = CURRENCY_TYPE;
+const { BTC, USD, LTC } = CURRENCY_TYPE;
 
 // const exchanges = [
 //   {
@@ -59,12 +60,26 @@ const { BTC, ITC, ETH, ETC, BCC, USD } = CURRENCY_TYPE;
 // ];
 
 const exchanges = [];
-let uc = new UnderlyingCurrency(USD);
-let pc = new PriceCurrency(BTC)
-pc.addUnderlyingCurrencies(uc);
-let exchange = new Exchange(OK);
-exchange.addPriceCurrency(pc);
-exchanges.push(exchange);
+let uc1 = new UnderlyingCurrency(USD);
+let pc1 = new PriceCurrency(BTC)
+pc1.addUnderlyingCurrencies(uc1);
+let exchange1 = new Exchange(OK);
+exchange1.addPriceCurrency(pc1);
+exchanges.push(exchange1);
+
+let uc2 = new UnderlyingCurrency(BTC);
+let pc2 = new PriceCurrency(LTC);
+pc2.addUnderlyingCurrencies(uc2);
+let exchange2 = new Exchange(HB);
+exchange2.addPriceCurrency(pc1);
+exchanges.push(exchange2);
+
+let uc3 = new UnderlyingCurrency(BTC);
+let pc3 = new PriceCurrency(LTC);
+pc3.addUnderlyingCurrencies(uc3);
+let exchange3 = new Exchange(ZB);
+exchange3.addPriceCurrency(pc3);
+exchanges.push(exchange3);
 
 class DataDeal {
   constructor(exchanges, interval) {
@@ -80,6 +95,10 @@ class DataDeal {
       }
       case OK: {
         return OKProvider;
+        break;
+      }
+      case HB: {
+        return HBProvider;
         break;
       }
     }
