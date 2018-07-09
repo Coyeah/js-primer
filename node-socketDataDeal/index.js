@@ -1,8 +1,15 @@
 const { EXCHANGE_TYPE } = require('./constants/model');
 const { CURRENCY_TYPE } = require('./constants/model');
-const { Exchange, PriceCurrency, UnderlyingCurrency } = require('./components/currencyClass');
+const { 
+  Exchange, 
+  PriceCurrency, 
+  UnderlyingCurrency,
+} = require('./components/currencyClass');
 
-const { OKProvider } = require('./components/fetchData');
+const { 
+  OKProvider,
+  ZBProvider,
+ } = require('./components/fetchData');
 
 const { ZB, HB, BA, OK } = EXCHANGE_TYPE;
 const { BTC, ITC, ETH, ETC, BCC, USD } = CURRENCY_TYPE;
@@ -67,6 +74,10 @@ class DataDeal {
 
   builtProvider(type) {
     switch (type) {
+      case ZB: {
+        return ZBProvider;
+        break;
+      }
       case OK: {
         return OKProvider;
         break;
@@ -109,6 +120,7 @@ class DataDeal {
             underlyingCurrency: uc.getUnderlyingCurrency(),
             onData: (data) => {
               uc.addData(data);
+              console.log(uc);
             },
             interval: this.interval,
           });
