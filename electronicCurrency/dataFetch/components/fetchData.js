@@ -49,6 +49,8 @@ class OKProvider extends Provider {
       vol: null,
       deepBids: null,
       deepAsks: null,
+      buy: null,
+      sell: null,
     };
     init(info, this.WS_URL, (msg) => {
       // do something

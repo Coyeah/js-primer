@@ -1,3 +1,5 @@
+const Tactics = require('./index');
+
 const [OK, BTC, BNB] = ['ok', 'btc', 'bnb'];
 
 const user = {
@@ -30,16 +32,16 @@ const user = {
        * 补仓跌幅 - 回调
        */
       buy_in: {
-        rate: 0.00000035,
-        retracement: 0.0000002,
+        rate: 0.35,
+        retracement: 0,
       },
       sell_out: {
-        rate: 0.0000002,
+        rate: 0.1,
         retracement: 0,
       },
       cover: {
         rate: 0.2,
-        retracement: 0,
+        retracement: 0.1,
       },
     },
     price: {
@@ -84,4 +86,7 @@ const user = {
   }
 }
 
-module.exports = user;
+
+// main
+let listen = new Tactics(user);
+listen.start();

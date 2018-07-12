@@ -1,338 +1,296 @@
-const [OK, BTC, BNB] = ['ok', 'btc', 'bnb'];
+const user = require('./data');
+const FakeProvider = require('./models/FakeProvider');
+const Observer = require('./models/Observer');
 
-const rule = {
-  user: [
-    {
-      exchange: OK,
-      price_currency: BTC,
-      underlying_currency: BNB,
-      predictive_capital: 1000000,
+const { countAverage, deepCopy, checkRate, checkType } = require('./utils');
+
+const { ACTION, RETRACE, CONTINUE } = checkType;
+const [PRICE_CHANGE, CHECK, OTHER_CHECK, TRADING_OPERATION, BUY, SELL, COVER] = ['PRICE_CHANGE', 'CHECK', 'OTHER_CHECK', 'TRADING_OPERATION', 'BUY', 'SELL', 'COVER'];
+
+// 启动观察者模式
+const observer = Observer();
+
+const handler = {
+  handlerDeal: (msg) => {
+    let type = msg.args.type || msg.type;
+    switch (type) {
+      case PRICE_CHANGE: {
+        if (msg.args.hold.length === 0) {
+          observer.fire(CHECK, msg.args);
+        } else {
+          observer.fire(OTHER_CHECK, msg.args);
+        }
+        break;
+      }
     }
-  ],
-  monitor: {
-    quantity: 1,  // 监控货币对数量
-    duration: 60,  // 监控时长（min）
+
   },
-  cover: {
-    /**
-     * 补仓类型
-     * 0 - 按买入金额
-     * 1 - 按补仓次数
-     */
-    type: 0,
-    amount: [100, 200, 300, 400],  // 买入金额
-    // type: 1,
-    // amount: 100,  // 买入金额
-    // times: 5,  // 补仓次数
-    // multiple: 0.5,  // 补仓倍率
+
+  buyPrice: undefined,
+  dbPrice: undefined,
+  handlerBuy: (msg) => {
+    let { newPrice, rule } = msg.args;
+
+    if (typeof handler.buyPrice === 'undefined') {
+      handler.buyPrice = newPrice;
+    }
+
+    let key = checkRate({
+      type: 1,
+      rate: rule.condition.buy_in.rate,
+      retracement: rule.condition.buy_in.retracement,
+      newPrice,
+      retracePrice: handler.dbPrice,
+      lastPrice: handler.buyPrice,
+    });
+
+    switch (key.type) {
+      case ACTION: {
+        observer.fire(TRADING_OPERATION, { type: BUY, price: newPrice });
+        break;
+      }
+      case RETRACE: {
+        handler.dbPrice = newPrice;
+        break;
+      }
+    }
   },
-  condition: {
-    /**
-     * 买入跌幅 - 回调
-     * 卖出涨幅 - 回调
-     * 补仓跌幅 - 回调
-     */
-    buy_in: {
-      rate: 0.35,
-      retracement: 0.20,
-    },
-    sell_out: {
-      rate: 0.35,
-      retracement: 0,
-    },
-    cover: {
-      rate: 0.35,
-      retracement: 0,
-    },
+
+  sellPrice: undefined,
+  dsPrice: undefined,
+  handlerSell: (msg) => {
+    let { newPrice, rule, hold } = msg.args;
+
+    switch (rule.price.close) {
+      /* 均价平仓 */
+      case 0: {
+        if (typeof handler.sellPrice === 'undefined') {
+          handler.sellPrice = countAverage(hold);
+        }
+
+        let key = checkRate({
+          type: 0,
+          rate: rule.condition.sell_out.rate,
+          retracement: rule.condition.sell_out.retracement,
+          newPrice,
+          retracePrice: handler.dsPrice,
+          lastPrice: handler.sellPrice,
+        });
+
+        switch (key.type) {
+          case ACTION: {
+            observer.fire(TRADING_OPERATION, { type: SELL, price: newPrice, close: rule.price.close });
+            break;
+          }
+          case RETRACE: {
+            handler.dsPrice = newPrice;
+            break;
+          }
+        }
+        break;
+      }
+      /* 逐单平仓 */
+      case 1: {
+        hold.forEach((value, index) => {
+          let key = checkRate({
+            type: 0,
+            rate: rule.condition.sell_out.rate,
+            retracement: rule.condition.sell_out.retracement,
+            newPrice,
+            retracePrice: value.dsPrice,
+            lastPrice: value.inPrice,
+          });
+
+          switch (key.type) {
+            case ACTION: {
+              observer.fire(TRADING_OPERATION, { type: SELL, price: newPrice, close: rule.price.close });
+              break;
+            }
+            case RETRACE: {
+              value.dsPrice = newPrice;
+              break;
+            }
+          }
+        });
+        break;
+      }
+    }
   },
-  price: {
-    /**
-     * 补仓价格采用
-     * 0 - 最后买入价
-     * 1 - 当前持仓均价
-     */
-    cover: 0,
-    /**
-     * 平仓规则
-     * 0 - 均价平仓
-     * 1 - 逐单平仓
-     */
-    close: 0,
-    /**
-     * 行情价格策略
-     * 0 - 交易价优先
-     * 1 - 量优先
-     */
-    strategy: 0
+
+  coverPrice: undefined,
+  dcPrice: undefined,
+  handlerCover: (msg) => {
+    let { newPrice, rule, hold } = msg.args;
+
+    /* 判断持有量 */
+    if (hold.length != 0) {
+      if (typeof handler.coverPrice === 'undefined') {
+        switch (rule.price.cover) {
+          /* 最后买入价 */
+          case 0: {
+            handler.coverPrice = hold[hold.length - 1].inPrice;
+            break;
+          }
+          /* 当前持仓均价 */
+          case 1: {
+            handler.coverPrice = countAverage(hold);
+            break;
+          }
+        }
+      }
+
+      let key = checkRate({
+        type: 1,
+        rate: rule.condition.cover.rate,
+        retracement: rule.condition.cover.retracement,
+        newPrice,
+        retracePrice: handler.dcPrice,
+        lastPrice: handler.coverPrice,
+      });
+
+      switch (key.type) {
+        case ACTION: {
+          observer.fire(TRADING_OPERATION, { type: COVER, price: newPrice });
+          break;
+        }
+        case RETRACE: {
+          handler.dcPrice = newPrice;
+          break;
+        }
+      }
+    }
   },
-  exception: {
-    /**
-     * 暴涨应对策略
-     */
-    rise: {
-      duration: 10,  // 监控时间
-      rate: 0.15,  // 拉升
-      multiple: 0.5,  // 调整买入跌幅（倍）
-    },
-  },
-  abolish: {
-    /**
-     * 是否撤单
-     * 0 - 否
-     * 1 - 是
-     */
-    status: 0,
-    timeout: 60,  // 下单超时（sec）
+
+  handlerRise: (msg) => {
+
   }
 }
-
-class FakeProvider {
-  constructor(exchange, priceCurrency, underlyingCurrency) {
-    this.exchagne = exchange;
-    this.priceCurrency = priceCurrency;
-    this.underlyingCurrency = underlyingCurrency;
-  }
-
-  start(fn) {
-    let data = [6, 5.4, 3.4, 1.2, 1.5, 1.6, 1.8, 2.0, 3.3, 5.5, 6.7, 3.5];
-    for (let i = 0; i < data.length; i++) {
-      ((j) => {
-        setTimeout(() => {
-          fn(data[j]);
-        }, 500 * j);
-      })(i)
-    }
-  }
-}
-
-const [BUY, SELL] = ['buy', 'sell'];
 
 class Tactics {
-  constructor(rule) {
-    this.rule = rule;
+  constructor(user) {
+    this.exchange = user.exchange;
+    this.priceCurrency = user.price_currency;
+    this.underlyingCurrency = user.underlying_currency;
+    this.predictiveCapital = user.predictive_capital;
+    this.rule = user.rule;
+
+    /* 初始化属性 */
     this.price = [];
+    this.hold = [];
+    this.coTac = {
+      amount: deepCopy(this.rule.cover.amount),
+      times: this.rule.cover.times,
+      multiple: this.rule.cover.multiple,
+    }
+
+    /* 私有方法 */
+    this.tradingOperation = (msg) => {
+      switch (msg.args.type) {
+        case BUY: {
+          handler.buyPrice = handler.dbPrice = undefined;
+
+          let cash;
+          if (typeof this.coTac.amount === 'number') {
+            cash = this.coTac.amount;
+          } else {
+            cash = this.coTac.amount[0];
+            this.coTac.amount.shift();
+          }
+
+          this.hold.push({
+            inPrice: msg.args.price,
+            amount: cash / msg.args.price,
+            dsPrice: undefined,
+          });
+          console.log('HOLD:', this.hold, '---------BOUGHT-------------');
+          break;
+        }
+        case SELL: {
+          const { price, close, index } = msg.args
+          handler.coverPrice = handler.dcPrice = handler.sellPrice = handler.dsPrice = undefined;
+
+          switch (close) {
+            case 0: {
+              this.hold = [];
+              break;
+            }
+            case 1: {
+              this.hold.splice(index, 1);
+              break;
+            }
+          }
+
+          console.log('HOLD:', this.hold, '---------SELLED-------------');
+          break;
+        }
+        case COVER: {
+          handler.coverPrice = handler.dcPrice = handler.sellPrice = handler.dsPrice = undefined;
+
+          let cash;
+          if (typeof this.coTac.amount === 'number') {
+            if (this.coTac.multiple !== 0) {
+              cash = Math.pow(this.coTac.multiple, (this.rule.cover.times - this.coTac.times + 1)) * this.coTac.amount;
+              this.coTac.times -= 1;
+            }
+          } else {
+            if (this.coTac.amount.length !== 0) {
+              cash = this.coTac.amount[0];
+              this.coTac.amount.shift();
+            }
+          }
+          if (cash) {
+            this.hold.push({
+              inPrice: msg.args.price,
+              amount: cash / msg.args.price,
+              dsPrice: undefined,
+            });
+            console.log('HOLD:', this.hold, '---------COVERED-------------');
+          }
+          break;
+        }
+      }
+    }
+  }
+
+  start() {
+    /* 设置初始化监听 */
+    observer.regist(PRICE_CHANGE, handler.handlerDeal);
+    observer.regist(CHECK, handler.handlerBuy);
+    observer.regist(OTHER_CHECK, handler.handlerSell);
+    observer.regist(OTHER_CHECK, handler.handlerCover);
+    observer.regist(TRADING_OPERATION, this.tradingOperation);
+
+    const self = this;
+
+    let provider = new FakeProvider(this.exchange, this.priceCurrency, this.underlyingCurrency);
+    provider.start((data) => {
+      self.price.push(data);
+      console.log(self.price);
+
+      observer.fire(PRICE_CHANGE, {
+        rule: self.rule,
+        newPrice: self.price[self.price.length - 1],
+        hold: self.hold,
+      })
+    })
   }
 
   getRule() {
     return this.rule;
   }
-
-  start() {
-    const self = this;
-
-    const handleBuyIn = {
-      lock: false,
-
-      /**
-       * 0 - 不存在回调
-       * 1 - 存在而不满足条件回调
-       * 2 - 存在且满足条件回调
-       */
-      isRetrace: self.rule.condition.buy_in.retracement === 0 ? 0 : 1,
-
-      lastValue: 0,  // p1
-
-      newsetValue: 0,  // p3
-
-      retarceValue: 0,  // p2
-
-      money: self.rule.cover.amount,
-
-      hold: [],
-
-      transition: function (event) {
-        const { price } = event;
-        this.newsetValue = price.length - 1;
-
-        switch (this.isRetrace) {
-          case 0: {
-            let currentRate = (1 - price[this.newsetValue] / price[this.lastValue]).toFixed(2);
-
-            this.lock = true;
-
-            if (currentRate > self.rule.condition.buy_in.rate) {
-              // console.log(currentRate, self.rule.condition.buy_in.rate);
-              this.buyIt(price[price.length - 1]);
-
-              event.lastValue = this.lastValue;
-            }
-            break;
-          }
-          case 1: {
-            let currentRate = (1 - price[this.newsetValue] / price[this.lastValue]).toFixed(2);
-
-            /* 达到跌幅要求 */
-            if (currentRate > self.rule.condition.buy_in.rate) {
-              this.retarceValue = this.newsetValue;
-              this.isRetrace = 2;
-              this.lock = true;
-            }
-            break;
-          }
-          case 2: {
-            let oldFallRate = (1 - price[this.retarceValue] / price[this.lastValue]).toFixed(2);
-            let currentRate = (1 - price[this.newsetValue] / price[this.lastValue]).toFixed(2);
-            // console.log(oldFallRate, currentRate);
-
-            /* 判断是否持续下跌 */
-            if (currentRate > oldFallRate) {
-              this.retarceValue = this.newsetValue;
-            } else {
-              let retarceRate = (price[this.newsetValue] / price[this.retarceValue] - 1).toFixed(2);
-              // console.log(retarceRate);
-              /* 判断是否满足回调条件 */
-              if (retarceRate >= self.rule.condition.buy_in.retracement) {
-                this.buyIt(price[price.length - 1]);
-
-                event.lastValue = this.lastValue;
-                this.isRetrace = 1;
-              }
-            }
-          }
-        }
-
-        event.hold = this.hold;
-        return event;
-      },
-
-      buyIt: function (price) {
-        let count;
-        if (this.money instanceof Array) {
-          count = this.money[0] / price;
-          this.money.shift();
-        } else {
-          count = this.money / price;
-        }
-
-        this.retarceValue = this.lastValue = this.newsetValue;
-        this.lock = false;
-        this.hold.push({
-          count,
-          price,
-        })
-
-        // do something about buy
-
-        console.log('======X', 'auto buy ' + this.hold.length + ' time(s).');
-      },
-
-      update: function (event) {
-        if (event.hasOwnProperty('lastValue')) {
-          this.lastValue = event.lastValue;
-        }
-        if (event.hasOwnProperty('hold')) {
-          this.hold = event.hold;
-        }
-      },
-    }
-
-    const handleSellOut = {
-      lock: false,
-
-      isRetrace: self.rule.condition.sell_out.retracement === 0 ? 0 : 1,
-
-      lastValue: 0,  // p1
-
-      newsetValue: 0,  // p3
-
-      retarceValue: 0,  // p2
-
-      hold: [],
-
-      transition: function (event) {
-        const { price } = event;
-        this.newsetValue = price.length - 1;
-
-        this.update(event);
-
-        if (this.hold.length == 0) return event;
-
-        switch (this.isRetrace) {
-          case 0: {
-            let currentRate = (price[this.newsetValue] / price[this.lastValue] - 1).toFixed(2);
-
-            this.lock = true;
-
-            if (currentRate >= self.rule.condition.sell_out.rate) {
-              this.sellIt(price[price.length - 1]);
-            }
-          }
-          case 1: {
-
-          }
-          case 2: {
-
-          }
-        }
-
-        event.hold = this.hold;
-        return event;
-      },
-
-      sellIt: function (price) {
-
-        // do something about sell
-
-        console.log('======X', 'auto sell ' + this.hold.length + ' time(s).');
-
-        this.retarceValue = this.lastValue = this.newsetValue;
-        this.lock = false;
-        this.hold.shift();
-      },
-
-      update: function (event) {
-        if (event.hasOwnProperty('lastValue')) {
-          this.lastValue = event.lastValue;
-        }
-        if (event.hasOwnProperty('hold')) {
-          this.hold = event.hold;
-        }
-      },
-    }
-
-    const handleCover = {
-      lock: false,
-
-      isRetrace: self.rule.condition.cover.retracement === 0 ? 0 : 1,
-
-      lastValue: 0,
-
-      newsetValue: 0,
-
-      retarceValue: 0,
-
-      transition: function (event) {
-
-      },
-
-      update: function (event) {
-        if (event.hasOwnProperty('lastValue')) {
-          this.lastValue = event.lastValue;
-        }
-        if (event.hasOwnProperty('hold')) {
-          this.hold = event.hold;
-        }
-      },
-    }
-
-    let provider = new FakeProvider(this.rule.user[0].exchange, this.rule.user[0].price_currency, this.rule.user[0].underlying_currency);
-    provider.start((data) => {
-      self.price.push(data);
-      console.log(self.price);
-
-      let event = {
-        price: self.price,
-      }
-
-      event = handleBuyIn.transition(event);
-
-      event = handleSellOut.transition(event);
-
-      console.log("======>", event);
-    });
-  }
 }
 
+// module.exports = Tactics;
+
 // main
-let listen = new Tactics(rule);
+let listen = new Tactics(user);
 listen.start();
+setTimeout(() => {
+  let listener = new Tactics(user);
+  listener.start();
+}, 500);
+
+
+setInterval(() => {
+  console.log(handler);
+}, 500);
