@@ -1,9 +1,5 @@
 # 学习JS的各种各种~
 
-## oop-restaurant
-
-学习JavaScript面向对象编程。
-
 ### 单例模式
 
 单例就是保证一个类只有一个实例。
@@ -126,6 +122,8 @@
 ---
 
 ## 模拟餐厅运营 （oop-restaurant)
+
+学习JavaScript面向对象编程。
 
 #### 需求：
 

@@ -110,29 +110,42 @@ Sigleton.prototype = {
  */
 
 
-// // ===== 单例demo5 独立对象交互 ===== //
-// let cat = (function (args) {
-//   let instance;
-//   let letterBox = function (msg) {
-//     this.letter = msg;
-//   }
-//   let info = {
-//     sendLetter: function (msg) {
-//       if (!instance) {
-//         instance = new letterBox(msg);
-//       }
-//       return instance;
-//     }
-//   }
-//   return info;
-// })();
+// ===== 单例demo5 独立对象交互 ===== //
+/*
+let cat = (function (args) {
+  let instance;
+  let letterBox = function (msg) {
+    this.letter = msg;
+  }
+  let info = {
+    sendLetter: function (msg) {
+      if (!instance) {
+        instance = new letterBox(msg);
+      }
+      return instance;
+    }
+  }
+  return info;
+})();
 
-// let dog = {
-//   callCat: function (msg) {
-//     let _xw = cat.sendLetter(msg);
-//     console.log(_xw.letter);
-//     _xw = null;
-//   }
-// }
+let dog = {
+  callCat: function (msg) {
+    let _xw = cat.sendLetter(msg);
+    console.log(_xw.letter);
+    _xw = null;
+  }
+}
 
-// dog.callCat("Hello World!");
+dog.callCat("Hello World!");
+ */
+
+// ===== 单例demo6 ES6的单例写法 ===== //
+class Singleton {
+  constructor(data) {
+    if (Singleton.prototype.Instance === undefined) {
+      this.data = data;
+      Singleton.prototype.Instance = this;
+    }
+    return Singleton.prototype.Instance;
+  }
+}
