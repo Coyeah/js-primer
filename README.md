@@ -147,8 +147,59 @@
 
 ---
 
-## AJAX封装 （AJAX）
+## asynchronous
 
-基于原生 AJAX 的封装。
+### AJAX
+
+简单的 AJAX 封装
+
+```javascript
+function ajax (method, url, data, callback) {
+  var xhr = null;
+  try {
+    xhr = new XMLHttpRequest();
+  } catch (e) {
+    xhr = new ActiveXobject('Microsoft.XMLHTTP');
+  }
+  if (!method || method == 'GET') {
+    method = 'GET';
+    if (data) {
+      url = url + '?' + data;
+    }
+    xhr.open(method, url, true);
+    xhr.send();
+  } else if (method == 'POST') {
+    method = 'POST';
+    xhr.open(method, url, true);
+    if (data) {
+      xhr.send(JSON.stringify(data));
+    } else {
+      xhr.send();
+    }
+  }
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      var data = JSON.parse(xhr.responseText);
+      callback && callback(xhr);
+    }
+  }
+}
+```
+
+### promise
+
+为了解决回调地狱嵌套带来的问题，在 EcmaScript 6 中新增了一个 API：Promise。
+
+#### callback hell
+
+![callback-hell](http://odssgnnpf.bkt.clouddn.com/ad51ce297e8dd51850842ff012bdc3cb.jpg)
+
+#### promise 状态
+
+* Pending
+* Resolved
+* Rejected
+
+promise 的状态只能由 `Pending` 转变为 `Resolev`/`Rejected`，不可逆。
 
 ---

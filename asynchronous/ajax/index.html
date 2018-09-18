@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>AJAX</title>
+</head>
+
+<body>
+  <script type="text/javascript">
+    // AJAX 原生
+    // var xhr = new XMLHttpRequest();
+    // xhr.onload = function () {
+    //   console.log(xhr.responseText);
+    // }
+    // xhr.open('get', 'data.json', true);
+    // xhr.send();
+
+    // 封装 GET AJAX 原生
+    // function get (url, callback) {
+    //   var xhr = new XMLHttpRequest();
+    //   xhr.onload = function () {
+    //     callback(xhr.responseText);
+    //   }
+    //   xhr.open('get', url, true);
+    //   xhr.send();
+    // };
+    // get('data.json', function (data) {
+    //   console.log(data);
+    // });
+
+    // 封装 AJAX 升级（GET & POST）
+    function ajax (method, url, data, callback) {
+      var xhr = null;
+      try {
+        xhr = new XMLHttpRequest();
+      } catch (e) {
+        xhr = new ActiveXobject('Microsoft.XMLHTTP');
+      }
+      if (!method || method == 'GET') {
+        method = 'GET';
+        if (data) {
+          url = url + '?' + data;
+        }
+        xhr.open(method, url, true);
+        xhr.send();
+      } else if (method == 'POST') {
+        method = 'POST';
+        xhr.open(method, url, true);
+        if (data) {
+          xhr.send(JSON.stringify(data));
+        } else {
+          xhr.send();
+        }
+      }
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var data = JSON.parse(xhr.responseText);
+          callback && callback(xhr);
+        }
+      }
+    }
+
+    get('GET', 'data.json', null, function (data) {
+      console.log(data);
+    });
+
+  </script>
+</body>
+
+</html>
