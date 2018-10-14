@@ -127,7 +127,7 @@
 
 学习JavaScript面向对象编程。
 
-#### 需求：
+### 需求：
 
 > 我们现在要开一个餐厅啦，餐厅里面有服务员，有厨师，有顾客。学习面向对象，为餐厅和几个角色创建自己的类吧。
 > 餐厅可以招聘或者解雇职员，职员越多，就越能够满足更多的顾客需求，从而赚取更多的钱
@@ -201,5 +201,25 @@ function ajax (method, url, data, callback) {
 * Rejected
 
 promise 的状态只能由 `Pending` 转变为 `Resolev`/`Rejected`，不可逆。
+
+---
+
+## 算法 （algorithm）
+
+### quickSort - 快速排序
+
+### bubbleSort - 冒泡排序
+
+### enumeration - 枚举法
+
+### binarySearch - 二分法查询
+
+### deepCopy - 深拷贝
+
+---
+
+## 模仿学习 （copyLearn）
+
+### [underscore.js](https://underscorejs.org/)
 
 ---
