@@ -218,8 +218,10 @@ promise 的状态只能由 `Pending` 转变为 `Resolev`/`Rejected`，不可逆�
 
 ---
 
-## 模仿学习 （copyLearn）
+## 系统项目的模块 （systemModules）
 
-### [underscore.js](https://underscorejs.org/)
+### Can - 前端权限管理模块
+
+### Request - 请求模块
 
 ---
