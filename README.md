@@ -204,17 +204,30 @@ promise 的状态只能由 `Pending` 转变为 `Resolev`/`Rejected`，不可逆�
 
 ---
 
-## 算法 （algorithm）
+## 关于 javascript 的方法应用
 
-### quickSort - 快速排序
+### 算法 （algorithm）
 
-### bubbleSort - 冒泡排序
++ quickSort - 快速排序
++ bubbleSort - 冒泡排序
++ enumeration - 枚举法
++ binarySearch - 二分法查询
++ deepCopy - 深拷贝
 
-### enumeration - 枚举法
+### 数组去重 （distinct）
 
-### binarySearch - 二分法查询
-
-### deepCopy - 深拷贝
++ demo01 - 利用 ES6 Set 去重
++ demo02 - 利用 for 嵌套 for，然后 splice 去重
++ demo03 - 利用 indexOf 去重
++ demo04 - 利用 sort()
++ demo05 - 利用对象的属性不能相同的特点进行去重
++ demo06 - 利用 includes
++ demo07 - 利用 hasOwnProperty
++ demo08 - 利用 filter
++ demo09 - 利用递归去重
++ demo10 - 利用 Map 数据结构去重
++ demo11 - 利用 reduce + includes
++ demo12 - [...new Set(arr)]
 
 ---
 
