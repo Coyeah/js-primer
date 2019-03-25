@@ -192,7 +192,7 @@ function ajax (method, url, data, callback) {
 
 #### callback hell
 
-![callback-hell](http://odssgnnpf.bkt.clouddn.com/ad51ce297e8dd51850842ff012bdc3cb.jpg)
+![图解](https://github.com/Coyeah/js-primer/blob/master/resource/callback_hell.jpg)
 
 #### promise 状态
 
@@ -228,6 +228,10 @@ promise 的状态只能由 `Pending` 转变为 `Resolev`/`Rejected`，不可逆�
 + demo10 - 利用 Map 数据结构去重
 + demo11 - 利用 reduce + includes
 + demo12 - [...new Set(arr)]
+
+---
+
+## Performance 页面性能
 
 ---
 
